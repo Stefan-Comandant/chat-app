@@ -1,11 +1,13 @@
 package main
 
 import (
+	"go-chat-app/authentication"
 	"go-chat-app/database"
 	"log"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 )
 
@@ -26,11 +28,30 @@ func main() {
 		DBName:   os.Getenv("DB_NAME"),
 	})
 
+	database.DB.Table("users").AutoMigrate(&authentication.User{})
+	database.DB.Table("sessions").AutoMigrate(&authentication.Session{})
+
 	if err != nil {
 		log.Fatalf("Error while opening db: \n%v\n", err)
 	}
 
 	router := fiber.New()
+	router.Use(func(ctx *fiber.Ctx) error {
+		log.Printf("New request: \nMethod: %v\nTo: %v\n", ctx.Method(), ctx.Path())
+
+		return ctx.Next()
+	})
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:5173",
+		AllowMethods:     "GET, POST, PATCH, DELETE, OPTIONS",
+		AllowHeaders:     "Origin, Content-Type",
+		AllowCredentials: true,
+	}))
+
+	router.Post("/register", authentication.Register)
+	router.Post("/login", authentication.Login)
+	router.Get("/logout", authentication.Logout)
 
 	// Start server
 	err = router.Listen(":7000")
