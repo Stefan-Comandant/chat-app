@@ -1,6 +1,7 @@
 package authentication
 
 import (
+	"fmt"
 	"go-chat-app/database"
 
 	"github.com/gofiber/fiber/v2"
@@ -39,7 +40,25 @@ func Register(ctx *fiber.Ctx) error {
 	}
 
 	//TODO: Send email with verification code
-	// SendGoMail("")
+
+	verificationCode, err := GenerateSessionId(8)
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error() })
+		return err
+	}
+
+
+	emailBody := fmt.Sprintf("<p>Here is your verification code, bitch</p><h1>%v</h1>", verificationCode)
+
+	// Send an email with the verification code
+	// William Wigger kill that nigger
+	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
+	emailCodeChannel <- verificationCode
+
+	rightCode := <- emailCodeChannel
+	if rightCode == "failure" {
+		return nil
+	}
 
 	//Hash password and store user in db
 	hashedPass, err := HashPassword(body.Password)
@@ -61,5 +80,5 @@ func Register(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Sucesfully registred account!"})
+	return nil
 }

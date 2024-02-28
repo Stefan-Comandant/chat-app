@@ -6,6 +6,8 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
+var emailCodeChannel = make(chan string)
+
 func SendGoMail(from string, to string, subject string, body string) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", from)
@@ -14,7 +16,7 @@ func SendGoMail(from string, to string, subject string, body string) {
 	m.SetBody("text/html", body)
 	// m.Attach("/home/Alex/lolcat.jpg")
 
-	d := gomail.NewDialer("smtp.gmail.com", 587, "from@gmail.com", os.Getenv("APP_PASSWORD"))
+	d := gomail.NewDialer("smtp.gmail.com", 587, from, os.Getenv("APP_PASSWORD"))
 
 	if err := d.DialAndSend(m); err != nil {
 		panic(err)

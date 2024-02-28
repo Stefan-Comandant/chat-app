@@ -36,22 +36,22 @@ func main() {
 	}
 
 	router := fiber.New()
-	router.Use(func(ctx *fiber.Ctx) error {
-		log.Printf("New request: \nMethod: %v\nTo: %v\n", ctx.Method(), ctx.Path())
-
-		return ctx.Next()
-	})
-
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:5173",
 		AllowMethods:     "GET, POST, PATCH, DELETE, OPTIONS",
 		AllowHeaders:     "Origin, Content-Type",
 		AllowCredentials: true,
 	}))
+	router.Use(func(ctx *fiber.Ctx) error {
+		log.Printf("New request: \nMethod: %v\nTo: %v\n", ctx.Method(), ctx.Path())
+
+		return ctx.Next()
+	})
 
 	router.Post("/register", authentication.Register)
 	router.Post("/login", authentication.Login)
 	router.Get("/logout", authentication.Logout)
+	router.Get("/code/:code", authentication.EmailCodeVerifier)
 
 	// Start server
 	err = router.Listen(":7000")
