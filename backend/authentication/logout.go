@@ -1,6 +1,8 @@
 package authentication
 
-import "github.com/gofiber/fiber/v2"
+import  (
+	"github.com/gofiber/fiber/v2" 
+)
 
 func Logout(ctx *fiber.Ctx) error {
 	err := RemoveSessionAndCookie(ctx)
@@ -9,5 +11,5 @@ func Logout(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "success", "response": "Succesfully logged out!"})
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully logged out!"})
 }

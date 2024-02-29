@@ -5,13 +5,18 @@ import (
 )
 
 func EmailCodeVerifier(ctx *fiber.Ctx) error {
+	// Code sent from the user
 	var sentCode = ctx.Params("code")
+
+	// Listen for msg with the verification code 
 	code := <- emailCodeChannel
+
+
 
 	if sentCode == code {
 		emailCodeChannel <- "success"
-		return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{ "status": "success", "response": "Succesfully registerd account!"})
+		return nil
 	}
 	emailCodeChannel <- "failure"
-	return ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{ "status": "error", "response": "Failed to register account!"})
+	return nil
 }

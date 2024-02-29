@@ -47,30 +47,20 @@ func GetUserIDFromSession(ctx *fiber.Ctx) (int, error) {
 		return -1, http.ErrNoCookie
 	}
 
-	var expiresAt time.Time
-	var UserID int
+	var session Session
 
-	err := database.DB.Table("sessions").Where("id = ?", cookie).Select("expires_at", "user_id").First(&expiresAt, &UserID).Error
+	err := database.DB.Table("sessions").Where("id = ?", cookie).Select("expires_at", "user_id").First(&session).Error
 
-	if expiresAt.Before(time.Now()) {
+	if session.ExpiresAt.Before(time.Now()) {
 		return -1, errors.New("expiredCookie")
 	}
 
-	return UserID, err
+	return session.UserID, err
 }
 func RemoveSessionAndCookie(ctx *fiber.Ctx) error {
 	var cookie = ctx.Cookies("session_cookie")
 	err := RemoveSessionFromDB(cookie)
 
-	ctx.Cookie(&fiber.Cookie{
-		Name:     "session_cookie",
-		Value:    "",
-		Path:     "/",
-		Domain:   "localhost",
-		MaxAge:   -1,
-		Expires:  time.Now(),
-		Secure:   true,
-		HTTPOnly: true,
-	})
+	ctx.ClearCookie("session_cookie")
 	return err
 }

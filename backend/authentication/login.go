@@ -3,6 +3,7 @@ package authentication
 import (
 	"go-chat-app/database"
 	"time"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -18,9 +19,25 @@ func Login(ctx *fiber.Ctx) error {
 	var matchingEmails int64
 
 	err = database.DB.Table("users").Where("email = ?", body.Email).Count(&matchingEmails).Error
-	if err != nil || matchingEmails != 1 {
+	if err != nil || matchingEmails == 0 {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": "Invalid credentials!"})
 		return err
+	}
+
+	verificationCode, err := GenerateSessionId(8)
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error()})
+		return err
+	}
+
+	var emailBody = fmt.Sprintf("<p>Here is your verification code, bitch</p><h1>%v</h1>", verificationCode)
+
+	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
+	emailCodeChannel <- verificationCode
+
+	rightCode := <- emailCodeChannel
+	if rightCode == "failure" {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": "Invalid verification code!"})
 	}
 
 	var user User
@@ -42,7 +59,7 @@ func Login(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	RemoveSessionAndCookie(ctx)
+	Logout(ctx)
 
 	err = AddSessionToDB(sessionID, user.UserID)
 	if err != nil {
@@ -61,7 +78,7 @@ func Login(ctx *fiber.Ctx) error {
 		Expires:  time.Now().Add(time.Hour * 24 * 7),
 		Secure:   true,
 		HTTPOnly: true,
+		SameSite: "lax",
 	})
-
-	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Sucesfully logged in!"})
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{ "status": "success", "response": "Succesfully logged in account!" })
 }

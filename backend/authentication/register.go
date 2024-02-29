@@ -39,7 +39,7 @@ func Register(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	//TODO: Send email with verification code
+	// Send email with verification code
 
 	verificationCode, err := GenerateSessionId(8)
 	if err != nil {
@@ -51,13 +51,12 @@ func Register(ctx *fiber.Ctx) error {
 	emailBody := fmt.Sprintf("<p>Here is your verification code, bitch</p><h1>%v</h1>", verificationCode)
 
 	// Send an email with the verification code
-	// William Wigger kill that nigger
 	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
 	emailCodeChannel <- verificationCode
 
 	rightCode := <- emailCodeChannel
 	if rightCode == "failure" {
-		return nil
+		return ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": "Invalid verification code!"})
 	}
 
 	//Hash password and store user in db
@@ -80,5 +79,5 @@ func Register(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return nil
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully registerd account!" })
 }
