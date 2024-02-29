@@ -43,7 +43,7 @@ func main() {
 		AllowCredentials: true,
 	}))
 	router.Use(func(ctx *fiber.Ctx) error {
-		log.Printf("New request: \nMethod: %v\nTo: %v\n", ctx.Method(), ctx.Path())
+		log.Printf("New request To %v with method %v\n", ctx.Path(), ctx.Method())
 
 		return ctx.Next()
 	})

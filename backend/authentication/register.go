@@ -50,13 +50,17 @@ func Register(ctx *fiber.Ctx) error {
 
 	emailBody := fmt.Sprintf("<p>Here is your verification code, bitch</p><h1>%v</h1>", verificationCode)
 
+	go CodeTimeOut()
 	// Send an email with the verification code
 	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
 	emailCodeChannel <- verificationCode
 
-	rightCode := <- emailCodeChannel
-	if rightCode == "failure" {
+	verificationCodeStatus := <- emailCodeChannel
+	if verificationCodeStatus == "failure" {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": "Invalid verification code!"})
+	}
+	if verificationCodeStatus == "timeout" {
+		return ctx.Status(fiber.StatusGatewayTimeout).JSON(&fiber.Map{"status": "timeout", "response": "Code verification timeout"})
 	}
 
 	//Hash password and store user in db
