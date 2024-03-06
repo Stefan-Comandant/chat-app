@@ -10,7 +10,7 @@ import (
 type User struct {
 	UserID   int     `json:"userid" gorm:"primaryKey;autoIncrement"`
 	Username string  `json:"username" gorm:"not null;"`
-	About	 string  `json:"about" gorm:"not null"`
+	About    string  `json:"about" gorm:"not null"`
 	Email    string  `json:"email" gorm:"not null;unique"`
 	Password string  `json:"password" gorm:"not null;"`
 	Currency string  `json:"currency"`
@@ -44,10 +44,9 @@ func Register(ctx *fiber.Ctx) error {
 
 	verificationCode, err := GenerateSessionId(8)
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error() })
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
-
 
 	emailBody := fmt.Sprintf("<p>Here is your verification code, bitch</p><h1>%v</h1>", verificationCode)
 
@@ -56,7 +55,7 @@ func Register(ctx *fiber.Ctx) error {
 	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
 	emailCodeChannel <- verificationCode
 
-	verificationCodeStatus := <- emailCodeChannel
+	verificationCodeStatus := <-emailCodeChannel
 	if verificationCodeStatus == "failure" {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": "Invalid verification code!"})
 	}
@@ -84,5 +83,5 @@ func Register(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully registerd account!" })
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully registerd account!"})
 }

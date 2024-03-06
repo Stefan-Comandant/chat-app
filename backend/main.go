@@ -2,15 +2,15 @@ package main
 
 import (
 	"go-chat-app/authentication"
-	"go-chat-app/database"
 	"go-chat-app/communication"
+	"go-chat-app/database"
 	"log"
 	"os"
 
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
-	"github.com/gofiber/contrib/websocket"
 )
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 		SSLMode:  os.Getenv("SSLMODE"),
 		DBName:   os.Getenv("DB_NAME"),
 	})
-	
+
 	if err != nil {
 		log.Fatalf("Error while opening db: \n%v\n", err)
 	}
@@ -54,7 +54,7 @@ func main() {
 	router.Post("/login", authentication.Login)
 	router.Get("/logout", authentication.Logout)
 	router.Get("/code/:code", authentication.EmailCodeVerifier)
-	
+
 	// Communication
 	router.Get("/rooms", communication.GetChatRooms)
 	router.Get("/rooms/:id", communication.GetChatRoomByID)

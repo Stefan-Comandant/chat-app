@@ -1,7 +1,7 @@
 package authentication
 
-import  (
-	"github.com/gofiber/fiber/v2" 
+import (
+	"github.com/gofiber/fiber/v2"
 )
 
 func Logout(ctx *fiber.Ctx) error {

@@ -1,9 +1,9 @@
 package authentication
 
 import (
+	"fmt"
 	"go-chat-app/database"
 	"time"
-	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,7 +26,7 @@ func Login(ctx *fiber.Ctx) error {
 
 	verificationCode, err := GenerateSessionId(8)
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error()})
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
@@ -36,8 +36,7 @@ func Login(ctx *fiber.Ctx) error {
 	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
 	emailCodeChannel <- verificationCode
 
-	
-	verificationCodeStatus := <- emailCodeChannel
+	verificationCodeStatus := <-emailCodeChannel
 	if verificationCodeStatus == "failure" {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": "Invalid verification code!"})
 	}
@@ -85,5 +84,5 @@ func Login(ctx *fiber.Ctx) error {
 		HTTPOnly: true,
 		SameSite: "lax",
 	})
-	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{ "status": "success", "response": "Succesfully logged in account!" })
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully logged in account!"})
 }
