@@ -10,10 +10,11 @@ import (
 type User struct {
 	UserID   int     `json:"userid" gorm:"primaryKey;autoIncrement"`
 	Username string  `json:"username" gorm:"not null;"`
+	About	 string  `json:"about" gorm:"not null"`
 	Email    string  `json:"email" gorm:"not null;unique"`
 	Password string  `json:"password" gorm:"not null;"`
 	Currency string  `json:"currency"`
-	Balance  float64 `json:"balance" gorm:"default:0"`
+	Balance  float64 `json:"balance" gorm:"not null;default:0"`
 }
 
 func Register(ctx *fiber.Ctx) error {

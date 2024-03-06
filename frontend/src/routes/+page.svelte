@@ -1,6 +1,7 @@
 <script>
 	let info1 = {
 		Username: '',
+		About: '',
 		Email: '',
 		Password: '',
 		Balance: 0,
@@ -73,3 +74,4 @@
 	console.log(response)
 }}>Logout</button>
 
+<a href="/chats">Chats</a>

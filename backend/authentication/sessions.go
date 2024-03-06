@@ -11,6 +11,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+type HasCookie interface {
+	Cookies(string, ...string) string
+}
+
 type Session struct {
 	ID        string    `json:"id" gorm:"primaryKey"`
 	UserID    int       `json:"userid" gorm:"not null"`
@@ -41,7 +45,7 @@ func RemoveSessionFromDB(ID string) error {
 	return database.DB.Table("sessions").Where("id = ?", ID).Delete(&Session{}).Error
 }
 
-func GetUserIDFromSession(ctx *fiber.Ctx) (int, error) {
+func GetUserIDFromSession(ctx HasCookie) (int, error) {
 	var cookie = ctx.Cookies("session_cookie")
 	if cookie == "" {
 		return -1, http.ErrNoCookie
