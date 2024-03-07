@@ -22,9 +22,8 @@
 	})
 
 	let info : ChatRoom = {
-		members: [9, 10],
-		admins: [9, 10],
-		owner: 9,
+		members: [],
+		admins: [],
 		messages: [],
 	}
 

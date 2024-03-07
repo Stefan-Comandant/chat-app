@@ -67,6 +67,16 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	userID, err := authentication.GetUserIDFromSession(ctx)
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+		return err
+	}
+
+	body.Owner = userID
+	body.Members = append(body.Members, int64(userID))
+	body.Admins = append(body.Admins, int64(userID))
+
 	err = database.DB.Table("chat_rooms").Create(&body).Error
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
