@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from "svelte"
-	import type { ChatRoom } from '$lib/interfaces.ts';
+	import type { ChatRoom, User } from '$lib/interfaces.ts';
 
+	let users: User[] = []
 	let rooms: ChatRoom[] = [];
 
 	async function GetChatRooms() {
@@ -58,7 +59,20 @@
 <form on:submit|preventDefault={AddChatRoom}>
 	<input type="text" placeholder="Name" bind:value={info.title} />
 	<input type="text" placeholder="Description" bind:value={info.description} />
+	<ul>
+		{#each users as user}
+			<li>
+				<span>
+					{user.username}
+				</span>
+				<br />
+				<label for="admin-checkbox">Admin</label>
+				<input type="checkbox" id="admin-checkbox"/>
+			</li>
+		{/each}
+	</ul>
+	<button type="button">Add members</button>
 
-
-	<button type="submit">Add</button>
+	<br />
+	<button type="submit">Create chat room</button>
 </form>
