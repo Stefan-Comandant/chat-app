@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte"
 	import type { ChatRoom, User } from '$lib/interfaces.ts';
-	import { AddChatRoom, GetChatRooms } from "$lib/chat-rooms.ts"
+	import { AddChatRoom, GetChatRooms, GetUsers } from "$lib/chat-rooms.ts"
 
 	let users: User[] = []
 	let rooms: ChatRoom[] = [];
@@ -9,6 +9,8 @@
 	onMount(async () => {
 		rooms = await GetChatRooms()
 		if (!rooms) rooms = []
+		users = await GetUsers()
+		if (!users) users = []
 	})
 
 	let info : ChatRoom = {

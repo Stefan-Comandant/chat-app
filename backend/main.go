@@ -58,6 +58,7 @@ func main() {
 	// Communication
 	router.Get("/rooms", communication.GetChatRooms)
 	router.Get("/rooms/:id", communication.GetChatRoomByID)
+	router.Get("/users", communication.GetUsers)
 
 	router.Put("/messages", communication.GetMessages)
 
