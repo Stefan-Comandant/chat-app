@@ -1,21 +1,10 @@
 <script lang="ts">
 	import { onMount } from "svelte"
 	import type { ChatRoom, User } from '$lib/interfaces.ts';
+	import { AddChatRoom, GetChatRooms } from "$lib/chat-rooms.ts"
 
 	let users: User[] = []
 	let rooms: ChatRoom[] = [];
-
-	async function GetChatRooms() {
-		const response = await fetch('http://localhost:7000/rooms', {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).then((res) => res.json());
-		if (response.status === "success") return response.response
-		return []
-	}
 
 	onMount(async () => {
 		rooms = await GetChatRooms()
@@ -26,17 +15,6 @@
 		members: [],
 		admins: [],
 		messages: [],
-	}
-
-	async function AddChatRoom() {
-		const response = await fetch("http://localhost:7000/rooms", {
-			method: "POST",
-			body: JSON.stringify(info),
-			credentials: "include",
-			headers: {
-				"Content-Type": "application/json"
-			}
-		}).then(res => res.json())
 	}
 </script>
 
@@ -56,7 +34,7 @@
 	{/each}
 </div>
 
-<form on:submit|preventDefault={AddChatRoom}>
+<form on:submit|preventDefault={() => AddChatRoom(info)}>
 	<input type="text" placeholder="Name" bind:value={info.title} />
 	<input type="text" placeholder="Description" bind:value={info.description} />
 	<ul>

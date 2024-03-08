@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { ChatRoom, Message } from '$lib/interfaces.ts';
+	import { GetRoom } from "$lib/chat-rooms.ts"
 
 	const id: string = $page.params.id;
 	let currentRoom: ChatRoom = {};
@@ -9,18 +10,7 @@
 	let socket: WebSocket;
 	let msg = '';
 
-	async function GetRoom(id: string) {
-		const response = await fetch(`http://localhost:7000/rooms/${id}`, {
-			method: 'GET',
-			credentials: 'include',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).then((res) => res.json());
-		if (response.status === 'success') return response.response;
-		return {};
-	}
-
+	
 	onMount(async () => {
 		socket = new WebSocket(`ws://localhost:7000/socket/${id}`);
 		socket.onopen = () => {
