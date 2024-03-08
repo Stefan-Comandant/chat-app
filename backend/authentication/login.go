@@ -65,7 +65,7 @@ func Login(ctx *fiber.Ctx) error {
 
 	Logout(ctx)
 
-	err = AddSessionToDB(sessionID, user.UserID)
+	err = AddSessionToDB(sessionID, user.ID)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": "Failed to add session!"})
 		return err

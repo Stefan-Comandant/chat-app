@@ -83,7 +83,7 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully created chat room!"})
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": body})
 }
 
 func EditChatRoom(ctx *fiber.Ctx) error {
@@ -129,7 +129,13 @@ func DeleteChatRoom(ctx *fiber.Ctx) error {
 func GetUsers(ctx *fiber.Ctx) error {
 	var response []authentication.User
 
-	err := database.DB.Table("users").Select("username", "about").Find(&response).Error
+	userID, err := authentication.GetUserIDFromSession(ctx)
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error()})
+		return err
+	}
+
+	err = database.DB.Table("users").Select("id", "username", "about").Where("NOT id = ?", userID).Find(&response).Error
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error()})
 		return err

@@ -18,6 +18,35 @@
 		admins: [],
 		messages: [],
 	}
+
+	function AddMember(event: any, id: number) {
+		if (!event) return
+
+		const target = event.target
+
+		if (target.checked === true) {
+			info.members.push(id)
+		} else {
+			info.members = info.members.filter(member => member != id)
+		}
+
+		console.log(info.members)
+	}
+
+	function AddAdmin(event: any, id: number) {
+		if (!event) return
+		const target = event.target
+
+		if (target.checked === true) {
+			info.admins.push(id)
+		} else {
+			info.admins = info.admins.filter(admin => admin != id)
+		}
+
+
+		console.log(info.admins)
+	}
+
 </script>
 
 <h1>Your Chat Rooms:</h1>
@@ -36,18 +65,27 @@
 	{/each}
 </div>
 
-<form on:submit|preventDefault={() => AddChatRoom(info)}>
+<form on:submit|preventDefault={async () => {
+		const room = await AddChatRoom(info)
+		if (room) rooms = [...rooms, room]
+	}
+}>
 	<input type="text" placeholder="Name" bind:value={info.title} />
 	<input type="text" placeholder="Description" bind:value={info.description} />
+	<br />
+	<span>Members:</span>
 	<ul>
-		{#each users as user}
+		{#each users as user (user.id)}
 			<li>
 				<span>
-					{user.username}
+					<span>{user.username}</span>
+					<input type="checkbox"on:input={(event) => AddMember(event, user.id)}/>
 				</span>
 				<br />
-				<label for="admin-checkbox">Admin</label>
-				<input type="checkbox" id="admin-checkbox"/>
+				<span>
+					<span>Admin</span>
+					<input type="checkbox" on:input={(event) => AddAdmin(event, user.id)}/>
+				</span>
 			</li>
 		{/each}
 	</ul>
