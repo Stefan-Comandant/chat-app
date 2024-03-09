@@ -1,5 +1,1 @@
-<a href="/chats">Chats</a>
-<a href="/register">Register</a>
-<a href="/login">Log in</a>
-<a href="/logout">Log out</a>
-<a href="/profiles">Profiles</a>
+<h1>Welcome to my chat app!</h1>

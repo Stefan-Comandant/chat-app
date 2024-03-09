@@ -5,7 +5,6 @@
 
 	let profile : User = {}
 	const id: string = $page.params.id
-	console.log(id)
 
 	async function GetProfileByID() {
 		const data = await fetch(`http://localhost:7000/users/${id}`, {

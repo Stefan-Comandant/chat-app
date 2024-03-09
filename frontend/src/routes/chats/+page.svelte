@@ -29,8 +29,6 @@
 		} else {
 			info.members = info.members.filter(member => member != id)
 		}
-
-		console.log(info.members)
 	}
 
 	function AddAdmin(event: any, id: number) {
@@ -42,9 +40,6 @@
 		} else {
 			info.admins = info.admins.filter(admin => admin != id)
 		}
-
-
-		console.log(info.admins)
 	}
 
 </script>
