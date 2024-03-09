@@ -55,17 +55,18 @@ func main() {
 	router.Get("/logout", authentication.Logout)
 	router.Get("/code/:code", authentication.EmailCodeVerifier)
 
-	// Communication
+	// Rooms
 	router.Get("/rooms", communication.GetChatRooms)
 	router.Get("/rooms/:id", communication.GetChatRoomByID)
-	router.Get("/users", communication.GetUsers)
-
-	router.Put("/messages", communication.GetMessages)
-
+	router.Patch("/rooms", communication.EditChatRoom)
 	router.Post("/rooms", communication.CreateChatRoom)
 
-	router.Patch("/rooms", communication.EditChatRoom)
+	// Users
+	router.Get("/users", communication.GetUsers)
+	router.Get("/users/:id", communication.GetUserByID)
 
+	// Messages
+	router.Put("/messages", communication.GetMessages)
 	router.Delete("message/:id", communication.DeleteMessage)
 
 	// Websocket endpoints

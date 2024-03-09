@@ -2,3 +2,4 @@
 <a href="/register">Register</a>
 <a href="/login">Log in</a>
 <a href="/logout">Log out</a>
+<a href="/profiles">Profiles</a>

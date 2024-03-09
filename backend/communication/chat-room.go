@@ -143,3 +143,17 @@ func GetUsers(ctx *fiber.Ctx) error {
 
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
 }
+
+func GetUserByID(ctx *fiber.Ctx) error {
+	var response authentication.User
+
+	var id = ctx.Params("id")
+
+	err := database.DB.Table("users").Select("id", "username", "about").Where("id = ?", id).First(&response).Error
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error()})
+		return err
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
+}
