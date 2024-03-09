@@ -1,52 +1,15 @@
 <script lang="ts">
 	import { onMount } from "svelte"
 	import type { ChatRoom, User } from '$lib/interfaces.ts';
-	import { AddChatRoom, GetChatRooms, GetUsers } from "$lib/chat-rooms.ts"
+	import { AddChatRoom, GetChatRooms } from "$lib/chat-rooms.ts"
+	import ChatForm from "$lib/components/forms/Chat-Form.svelte"
 
-	let users: User[] = []
 	let rooms: ChatRoom[] = [];
 
 	onMount(async () => {
 		rooms = await GetChatRooms()
 		if (!rooms) rooms = []
-		users = await GetUsers()
-		if (!users) users = []
 	})
-
-	let info : ChatRoom = {
-		members: [],
-		admins: [],
-		messages: [],
-	}
-
-	function AddMember(event: any, id: number) {
-		if (!event) return
-
-		const target = event.target
-
-		if (target.checked === true) {
-			info.members.push(id)
-		} else {
-			info.members = info.members.filter(member => member != id)
-		}
-
-		console.log(info.members)
-	}
-
-	function AddAdmin(event: any, id: number) {
-		if (!event) return
-		const target = event.target
-
-		if (target.checked === true) {
-			info.admins.push(id)
-		} else {
-			info.admins = info.admins.filter(admin => admin != id)
-		}
-
-
-		console.log(info.admins)
-	}
-
 </script>
 
 <h1>Your Chat Rooms:</h1>
@@ -65,32 +28,8 @@
 	{/each}
 </div>
 
-<form on:submit|preventDefault={async () => {
-		const room = await AddChatRoom(info)
+<ChatForm rooms={rooms} on:addChatRoom={async (event) => {
+		const room = await AddChatRoom(event.detail)
 		if (room) rooms = [...rooms, room]
 	}
-}>
-	<input type="text" placeholder="Name" bind:value={info.title} />
-	<input type="text" placeholder="Description" bind:value={info.description} />
-	<br />
-	<span>Members:</span>
-	<ul>
-		{#each users as user (user.id)}
-			<li>
-				<span>
-					<span>{user.username}</span>
-					<input type="checkbox"on:input={(event) => AddMember(event, user.id)}/>
-				</span>
-				<br />
-				<span>
-					<span>Admin</span>
-					<input type="checkbox" on:input={(event) => AddAdmin(event, user.id)}/>
-				</span>
-			</li>
-		{/each}
-	</ul>
-	<button type="button">Add members</button>
-
-	<br />
-	<button type="submit">Create chat room</button>
-</form>
+}/>

@@ -26,3 +26,11 @@ export interface ChatRoom {
 	owner: number
 	messages: number[]
 }
+
+export let FetchConfig = {
+	method: "GET",
+	credentials: "include",
+	headers: {
+		"Content-Type": "application/json",
+	},
+}

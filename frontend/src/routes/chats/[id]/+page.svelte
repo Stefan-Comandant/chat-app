@@ -34,7 +34,7 @@
 			</div>
 		{/each}
 	</div>
-	<input type="text" id="msg_input" bind:value={msg} />
+	<input type="text" bind:value={msg} />
 	<button
 		type="button"
 		on:click={() => {
