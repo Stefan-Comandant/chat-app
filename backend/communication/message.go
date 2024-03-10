@@ -53,6 +53,7 @@ func GetMessages(ctx *fiber.Ctx) error {
 		return err
 	}
 
+
 	err = database.DB.Table("messages").Where("id IN ?", body).Find(&response).Error
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})

@@ -6,7 +6,6 @@
 	const dispatcher = createEventDispatcher()
 
 	let users: User[] = []
-	export let rooms: ChatRoom[] = [];
 
 	onMount(async () => {
 		users = await GetUsers()

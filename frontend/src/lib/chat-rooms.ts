@@ -2,7 +2,7 @@ import type { ChatRoom } from "$lib/interfaces.ts"
 import { FetchConfig } from "$lib/interfaces.ts"
 
 export async function AddChatRoom(info: ChatRoom) {
-		const response = await fetch("http://localhost:7000/rooms", {...FetchConfig, method: "POST", body: JSON.stringify(info)}).then(res => res.json())
+		const response = await fetch("http://localhost:7000/rooms", { ...FetchConfig, method: "POST", body: JSON.stringify(info)}).then(res => res.json())
 
 		console.log(response)
 		if (response.status === "success") return response.response
@@ -29,7 +29,8 @@ export async function GetUsers() {
 
 export async function FetchMessages(id: number[]) {
 		const body = JSON.stringify(id);
-		const data = await fetch('http://localhost:7000/messages', { ...FetchConfig, method: "PUT", body: JSON.stringify(body)}).then((res) => res.json());
+		const data = await fetch('http://localhost:7000/messages', { ...FetchConfig, method: "PUT", body: body}).then((res) => res.json());
+
 		if (data.status === 'success') return data.response;
 		return [];
 }
