@@ -1,19 +1,26 @@
 <script lang="ts">
-	import type { User } from "$lib/interfaces.ts"
-	import { Login, VerifyWithCode } from "$lib/authentication.ts" 
-	import LoginForm from "$lib/components/forms/Login-Form.svelte"
+	import { VerifyWithCode } from '$lib/authentication.js';
+	import LoginForm from '$lib/components/forms/Login-Form.svelte';
 
-	let code = ""
-
-	let info: User = {
-		Email: "",
-		Password: "",
-	}
-
+	let code = '';
 </script>
 
-<LoginForm />
+<div class="body">
+	<LoginForm />
 
-<input type="text" bind:value={code} />
-<button	type="button" on:click={() => VerifyWithCode(code)}>Verify</button>
+	<div>
+		<input type="text" bind:value={code} />
+		<button type="button" on:click={() => VerifyWithCode(code)}>Verify</button>
+	</div>
+</div>
 
+<style>
+	.body {
+		height: 100dvh;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+</style>
