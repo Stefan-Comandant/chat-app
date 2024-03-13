@@ -21,6 +21,7 @@
 		color: #000;
 		border-radius: 20px;
 		padding: 10px 20px;
+		font-family: Arial;
 	}
 
 	.active {
