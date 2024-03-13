@@ -1,8 +1,11 @@
 <script lang="ts">
-	import Navbar from "$lib/components/Navbar.svelte"
+	import { page } from '$app/stores';
+	import Navbar from '$lib/components/Navbar.svelte';
 </script>
 
-<Navbar />
+<header>
+	<Navbar page={$page} />
+</header>
 
 <main>
 	<slot />

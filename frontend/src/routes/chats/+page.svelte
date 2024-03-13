@@ -28,7 +28,7 @@
 	{/each}
 </div>
 
-<ChatForm rooms={rooms} on:addChatRoom={async (event) => {
+<ChatForm on:addChatRoom={async (event) => {
 		const room = await AddChatRoom(event.detail)
 		if (room) rooms = [...rooms, room]
 	}

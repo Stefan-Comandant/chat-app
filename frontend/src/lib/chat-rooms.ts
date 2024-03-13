@@ -35,3 +35,11 @@ export async function FetchMessages(id: number[]) {
 		return [];
 }
 
+export async function GetUserData() {
+	const data = await fetch("http://localhost:7000/getUserData", FetchConfig).then(res => res.json())
+	
+	console.log(data)
+
+	if (data.status === "success") return data.response
+	return {}
+}

@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import type { ChatRoom, Message } from '$lib/interfaces.ts';
-	import { GetRoom, FetchMessages } from "$lib/chat-rooms.ts"
+	import type { ChatRoom, Message, User } from '$lib/interfaces.ts';
+	import { GetRoom, FetchMessages, GetUserData } from "$lib/chat-rooms.ts"
 
 	const id: string = $page.params.id;
 	let currentRoom: ChatRoom = {};
 	let messages: Message[] = [];
 	let socket: WebSocket;
 	let msg = '';
-
 	
+	let USER : User = {}
+
 	onMount(async () => {
 		socket = new WebSocket(`ws://localhost:7000/socket/${id}`);
 		socket.onopen = () => {
@@ -21,8 +22,9 @@
 		currentRoom = await GetRoom(id);
 		messages = await FetchMessages(currentRoom.messages);
 		if (!messages) messages = [];
+		USER= await GetUserData()
+		if (!USER) USER = {}
 	});
-
 </script>
 
 <div>

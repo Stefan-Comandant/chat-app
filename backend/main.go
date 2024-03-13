@@ -64,6 +64,7 @@ func main() {
 	// Users
 	router.Get("/users", communication.GetUsers)
 	router.Get("/users/:id", communication.GetUserByID)
+	router.Get("/getUserData", communication.GetUserData)
 
 	// Messages
 	router.Put("/messages", communication.GetMessages)
