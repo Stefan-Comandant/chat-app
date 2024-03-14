@@ -27,7 +27,7 @@ export interface ChatRoom {
 	messages: number[]
 }
 
-export let FetchConfig = {
+export let FetchConfig : any = {
 	method: "GET",
 	credentials: "include",
 	headers: {

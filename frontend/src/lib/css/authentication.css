@@ -21,7 +21,7 @@ form div input {
 }
 
 form button {
-	background: #fff;
+	background: hsl(0, 0%, 100%);
 	border: #005fcf solid 2px;
 	cursor: pointer;
 	border-radius: 25px;
