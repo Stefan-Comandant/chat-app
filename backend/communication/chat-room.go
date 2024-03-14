@@ -131,13 +131,13 @@ func GetUsers(ctx *fiber.Ctx) error {
 
 	userID, err := authentication.GetUserIDFromSession(ctx)
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error()})
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
 	err = database.DB.Table("users").Select("id", "username", "about").Where("NOT id = ?", userID).Find(&response).Error
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error()})
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
@@ -151,7 +151,7 @@ func GetUserByID(ctx *fiber.Ctx) error {
 
 	err := database.DB.Table("users").Select("id", "username", "about").Where("id = ?", id).First(&response).Error
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error()})
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
@@ -163,13 +163,13 @@ func GetUserData(ctx *fiber.Ctx) error {
 
 	userID, err := authentication.GetUserIDFromSession(ctx)
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error()})
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
 	err = database.DB.Table("users").Where("id = ?", userID).First(&response).Error
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error()})
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 

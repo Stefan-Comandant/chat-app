@@ -15,8 +15,8 @@
 	let info: ChatRoom = {
 		id: 0,
 		title: '',
-		createdat: '',
-		description: '',
+		createdat: null,
+		description: null,
 		owner: 0,
 		members: [],
 		admins: [],
