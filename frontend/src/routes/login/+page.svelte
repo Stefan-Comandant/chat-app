@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { VerifyWithCode } from '$lib/authentication.js';
+	import { VerifyWithCode } from '$lib/authentication.ts';
 	import LoginForm from '$lib/components/forms/Login-Form.svelte';
 
 	let code = '';

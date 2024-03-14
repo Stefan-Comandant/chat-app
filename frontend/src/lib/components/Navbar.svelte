@@ -1,7 +1,5 @@
 <script lang="ts">
 	export let page: any = {};
-
-	console.log(page);
 </script>
 
 <nav>

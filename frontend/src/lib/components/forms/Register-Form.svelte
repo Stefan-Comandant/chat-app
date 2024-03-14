@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { User } from '$lib/interfaces.ts';
-	import { Register } from '$lib/authentication.js';
+	import { Register } from '$lib/authentication.ts';
 
 	let info: User = {
 		id: 0,

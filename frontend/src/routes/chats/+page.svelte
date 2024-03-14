@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { onMount } from "svelte"
-	import type { ChatRoom, User } from '$lib/interfaces.ts';
-	import { AddChatRoom, GetChatRooms } from "$lib/chat-rooms.ts"
-	import ChatForm from "$lib/components/forms/Chat-Form.svelte"
+	import { onMount } from 'svelte';
+	import type { ChatRoom } from '$lib/interfaces.ts';
+	import { AddChatRoom, GetChatRooms } from '$lib/chat-rooms.ts';
+	import ChatForm from '$lib/components/forms/Chat-Form.svelte';
 
 	let rooms: ChatRoom[] = [];
 
 	onMount(async () => {
-		rooms = await GetChatRooms()
-		if (!rooms) rooms = []
-	})
+		rooms = await GetChatRooms();
+		if (!rooms) rooms = [];
+	});
 </script>
 
 <h1>Your Chat Rooms:</h1>
@@ -28,8 +28,9 @@
 	{/each}
 </div>
 
-<ChatForm on:addChatRoom={async (event) => {
-		const room = await AddChatRoom(event.detail)
-		if (room) rooms = [...rooms, room]
-	}
-}/>
+<ChatForm
+	on:addChatRoom={async (event) => {
+		const room = await AddChatRoom(event.detail);
+		if (room) rooms = [...rooms, room];
+	}}
+/>

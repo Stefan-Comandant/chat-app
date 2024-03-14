@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { ChatRoom, Message, User } from '$lib/interfaces.ts';
-	import { GetRoom, FetchMessages, GetUserData } from '$lib/chat-rooms.js';
+	import { GetRoom, FetchMessages, GetUserData } from '$lib/chat-rooms.ts';
 
 	const id: string = $page.params.id;
 	let currentRoom: ChatRoom = {

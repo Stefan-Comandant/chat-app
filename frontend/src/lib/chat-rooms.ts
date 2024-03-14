@@ -1,5 +1,5 @@
 import type { ChatRoom } from "$lib/interfaces.ts"
-import { FetchConfig } from "$lib/interfaces.js"
+import { FetchConfig } from "$lib/interfaces.ts"
 
 export async function AddChatRoom(info: ChatRoom) {
 		const response = await fetch("http://localhost:7000/rooms", { ...FetchConfig, method: "POST", body: JSON.stringify(info)}).then(res => res.json())

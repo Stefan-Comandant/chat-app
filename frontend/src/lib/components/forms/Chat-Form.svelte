@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { User, ChatRoom } from '$lib/interfaces.ts';
-	import { GetUsers } from '$lib/chat-rooms.js';
+	import { GetUsers } from '$lib/chat-rooms.ts';
 	import { onMount, createEventDispatcher } from 'svelte';
 
 	const dispatcher = createEventDispatcher();
