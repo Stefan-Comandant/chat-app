@@ -18,4 +18,8 @@
 		padding: 0;
 		margin: 0;
 	}
+
+	main {
+		padding-top: 38px;
+	}
 </style>

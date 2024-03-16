@@ -17,6 +17,7 @@
 		position: fixed;
 		left: 0;
 		right: 0;
+		height: 38px;
 	}
 
 	nav a {
@@ -24,6 +25,7 @@
 		color: #000;
 		border-radius: 20px;
 		padding: 10px 20px;
+		height: fit-content;
 	}
 
 	.active {
