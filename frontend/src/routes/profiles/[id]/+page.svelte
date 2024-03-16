@@ -45,8 +45,7 @@
 	<img src={imgAddress} alt="Pfp" />
 	<div>
 		<div>{profile.username}</div>
-		<span>The horniest nigga in the multiverse</span>
-		<!-- <p>{profile.about}</p> -->
+		<span>{profile.about}</span>
 	</div>
 </div>
 

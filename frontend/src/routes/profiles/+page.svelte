@@ -28,8 +28,7 @@
 				<img src={imgAddress} alt="Pfp" />
 				<div>
 					<div>{profile.username}</div>
-					<span>The horniest nigga</span>
-					<!-- <span>{profile.about}</span> -->
+					<span>{profile.about}</span>
 				</div>
 			</a>
 		</div>
