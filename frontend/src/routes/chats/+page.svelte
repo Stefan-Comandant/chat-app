@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { ChatRoom } from '$lib/interfaces.ts';
-	import { AddChatRoom, GetChatRooms } from '$lib/chat-rooms.ts';
-	import ChatForm from '$lib/components/forms/Chat-Form.svelte';
-	import { goto } from '$app/navigation';
+	import { GetChatRooms } from '$lib/chat-rooms.ts';
 
 	let rooms: ChatRoom[] = [];
 
@@ -28,12 +26,7 @@
 	{/each}
 </div>
 
-<ChatForm
-	on:addChatRoom={async (event) => {
-		const room = await AddChatRoom(event.detail);
-		if (room) rooms = [...rooms, room];
-	}}
-/>
+<a href="/chats/new">Create New Room</a>
 
 <style>
 	.room-container {
@@ -42,8 +35,6 @@
 	}
 
 	.room {
-		font-family: Arial;
-		cursor: pointer;
 		border-radius: 10px;
 		border: #000 solid 1px;
 		width: fit-content;

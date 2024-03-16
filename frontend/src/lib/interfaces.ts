@@ -19,8 +19,8 @@ export interface Message {
 export interface ChatRoom {
 	id: number;
 	title: string;
-	createdat: string;
-	description: string;
+	createdat?: string;
+	description?: string;
 	members: number[]
 	admins: number[]
 	owner: number

@@ -87,7 +87,7 @@
 		width: 674px;
 		height: 29px;
 		font-size: 15px;
-		font-family: Arial;
+		font-family: inherit;
 		border-radius: 25px;
 		padding: 10px;
 	}
@@ -131,7 +131,6 @@
 		min-width: 250px;
 		padding: 26px 14px 12px 14px;
 		border-radius: 20px;
-		font-family: Arial;
 		word-wrap: break-word;
 		color: #000;
 		box-shadow: 1px 3px 3px 4px rgba(0, 0, 0, 0.25);

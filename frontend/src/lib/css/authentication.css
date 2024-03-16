@@ -4,8 +4,9 @@ form {
 	align-items: center;
 	gap: 24px;
 	height: fit-content;
-	height: 426px;
-	width: 350px;
+	min-height: 426px;
+	width: fit-content;
+	min-width: 350px;
 	border: #000 solid 1px;
 	padding: 24px 15px;
 	border-radius: 25px;
@@ -20,7 +21,7 @@ form div input {
 	padding-left: 10px;
 }
 
-form button {
+form > button {
 	background: hsl(0, 0%, 100%);
 	border: #005fcf solid 2px;
 	cursor: pointer;
@@ -36,8 +37,8 @@ form button {
 	margin-top: auto;
 }
 
-form button:focus,
-form button:hover {
+form > button:focus,
+form > button:hover {
 	background: #005fcf;
 	border-color: #fff;
 	color: #fff;

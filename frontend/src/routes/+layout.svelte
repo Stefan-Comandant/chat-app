@@ -10,3 +10,12 @@
 <main>
 	<slot />
 </main>
+
+<style>
+	* {
+		font-family: Arial;
+		box-sizing: border-box;
+		padding: 0;
+		margin: 0;
+	}
+</style>
