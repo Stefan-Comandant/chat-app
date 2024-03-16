@@ -1,12 +1,28 @@
 <script lang="ts">
-	import type { User } from "$lib/interfaces.ts"
-	import { Register } from "$lib/authentication.ts"
+	import type { User } from '$lib/interfaces.ts';
+	import { Login } from '$lib/authentication.ts';
 
-	let info : User = {}
+	let info: User = {
+		id: 0,
+		username: '',
+		about: '',
+		email: '',
+		password: '',
+		currency: '',
+		balance: 0
+	};
 </script>
 
 <form on:submit|preventDefault={() => Login(info)}>
-	<input type="text" placeholder="Email" bind:value={info.Email} />
-	<input type="text" placeholder="Password" bind:value={info.Password} />
+	<div>
+		<input type="text" placeholder="Enter your email" bind:value={info.email} />
+	</div>
+	<div>
+		<input type="text" placeholder="Enter your password" bind:value={info.password} />
+	</div>
 	<button type="submit">Submit</button>
 </form>
+
+<style>
+	@import '../../css/authentication.css';
+</style>

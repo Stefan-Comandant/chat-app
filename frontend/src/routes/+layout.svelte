@@ -1,9 +1,25 @@
 <script lang="ts">
-	import Navbar from "$lib/components/Navbar.svelte"
+	import { page } from '$app/stores';
+	import Navbar from '$lib/components/Navbar.svelte';
 </script>
 
-<Navbar />
+<header>
+	<Navbar page={$page} />
+</header>
 
 <main>
 	<slot />
 </main>
+
+<style>
+	* {
+		font-family: Arial;
+		box-sizing: border-box;
+		padding: 0;
+		margin: 0;
+	}
+
+	main {
+		padding-top: 38px;
+	}
+</style>

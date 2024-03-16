@@ -19,15 +19,15 @@ export interface Message {
 export interface ChatRoom {
 	id: number;
 	title: string;
-	createdat: string;
-	description: string;
+	createdat?: string;
+	description?: string;
 	members: number[]
 	admins: number[]
 	owner: number
 	messages: number[]
 }
 
-export let FetchConfig = {
+export let FetchConfig : any = {
 	method: "GET",
 	credentials: "include",
 	headers: {
