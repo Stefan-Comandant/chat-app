@@ -16,9 +16,7 @@
 	const id: string = $page.params.id;
 
 	async function GetProfileByID() {
-		const data = await fetch(`http://localhost:7000/users/${id}`, FetchConfig).then((res) =>
-			res.json()
-		);
+		const data = await fetch(`/api/users/${id}`, FetchConfig).then((res) => res.json());
 		if (data.status === 'success') return data.response;
 		return {};
 	}
@@ -45,8 +43,7 @@
 	<img src={imgAddress} alt="Pfp" />
 	<div>
 		<div>{profile.username}</div>
-		<span>The horniest nigga in the multiverse</span>
-		<!-- <p>{profile.about}</p> -->
+		<span>{profile.about}</span>
 	</div>
 </div>
 
