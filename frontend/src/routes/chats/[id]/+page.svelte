@@ -23,7 +23,7 @@
 	let USER: User | any = {};
 
 	onMount(async () => {
-		socket = new WebSocket(`ws://localhost:7000/socket/${id}`);
+		socket = new WebSocket(`ws://localhost:7000/api/socket/${id}`);
 		socket.onopen = () => {
 			socket.onmessage = (event) => {
 				messages = [...messages, JSON.parse(event.data)];

@@ -41,7 +41,7 @@ func main() {
 
 	router := fiber.New()
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:5173",
+		AllowOrigins:     "http://localhost:9000",
 		AllowMethods:     "GET, POST, PATCH, PUT, DELETE, OPTIONS",
 		AllowHeaders:     "Origin, Content-Type",
 		AllowCredentials: true,
@@ -49,29 +49,30 @@ func main() {
 
 	router.Use(LoggerMiddleware)
 
+	api := router.Group("/api")
 	// Authentication
-	router.Post("/register", authentication.Register)
-	router.Post("/login", authentication.Login)
-	router.Get("/logout", authentication.Logout)
-	router.Get("/code/:code", authentication.EmailCodeVerifier)
+	api.Post("/register", authentication.Register)
+	api.Post("/login", authentication.Login)
+	api.Get("/logout", authentication.Logout)
+	api.Get("/code/:code", authentication.EmailCodeVerifier)
 
 	// Rooms
-	router.Get("/rooms", communication.GetChatRooms)
-	router.Get("/rooms/:id", communication.GetChatRoomByID)
-	router.Patch("/rooms", communication.EditChatRoom)
-	router.Post("/rooms", communication.CreateChatRoom)
+	api.Get("/rooms", communication.GetChatRooms)
+	api.Get("/rooms/:id", communication.GetChatRoomByID)
+	api.Patch("/rooms", communication.EditChatRoom)
+	api.Post("/rooms", communication.CreateChatRoom)
 
 	// Users
-	router.Get("/users", communication.GetUsers)
-	router.Get("/users/:id", communication.GetUserByID)
-	router.Get("/getUserData", communication.GetUserData)
+	api.Get("/users", communication.GetUsers)
+	api.Get("/users/:id", communication.GetUserByID)
+	api.Get("/getUserData", communication.GetUserData)
 
 	// Messages
-	router.Put("/messages", communication.GetMessages)
-	router.Delete("message/:id", communication.DeleteMessage)
+	api.Put("/messages", communication.GetMessages)
+	api.Delete("message/:id", communication.DeleteMessage)
 
 	// Websocket endpoints
-	router.Get("/socket/:id", websocket.New(communication.SendMessage))
+	api.Get("/socket/:id", websocket.New(communication.SendMessage))
 
 	// Start server
 	err = router.Listen(":7000")

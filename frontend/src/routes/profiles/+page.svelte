@@ -6,7 +6,7 @@
 	let profiles: User[] = [];
 
 	async function GetProfiles() {
-		const data = await fetch('http://localhost:7000/users', FetchConfig).then((res) => res.json());
+		const data = await fetch('/api/users', FetchConfig).then((res) => res.json());
 		if (data.status === 'success') return data.response;
 		return [];
 	}
