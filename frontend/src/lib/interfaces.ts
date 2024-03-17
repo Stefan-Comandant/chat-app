@@ -34,3 +34,7 @@ export let FetchConfig : any = {
 		"Content-Type": "application/json",
 	},
 }
+
+export interface Setting{
+	LightMode: boolean;
+}

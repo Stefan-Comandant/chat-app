@@ -8,6 +8,7 @@
 	<a href="/register" class:active={page.route.id === '/register'}>Register</a>
 	<a href="/chats" class:active={page.route.id.includes('/chats')}>Chats</a>
 	<a href="/profiles" class:active={page.route.id.includes('/profiles')}>Profiles</a>
+	<a href="/settings" class:active={page.route.id.includes('/settings')}>Settings</a>
 </nav>
 
 <style>
