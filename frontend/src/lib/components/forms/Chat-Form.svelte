@@ -15,13 +15,9 @@
 	});
 
 	let info: ChatRoom = {
-		id: 0,
-		title: '',
-		owner: 0,
-		members: [],
-		admins: [],
-		messages: []
-	};
+    members: [],
+    admins: [],
+  };
 
 	function AddMember(event: any, id: number) {
 		if (!event) return;
@@ -66,7 +62,7 @@
 	<div class="members-display">
 		<div class="members-title">
 			<span>Members</span>
-			<button class="edit-btn" on:click={() => (openModal = !openModal)}><EditButton /></button>
+			<button class="edit-btn" type="button" on:click={() => (openModal = !openModal)}><EditButton /></button>
 		</div>
 		<div class="members-container">
 			{#each info.members as member (member)}

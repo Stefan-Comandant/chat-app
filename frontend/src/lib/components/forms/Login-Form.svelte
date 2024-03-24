@@ -3,13 +3,9 @@
 	import { Login } from '$lib/authentication.ts';
 
 	let info: User = {
-		id: 0,
 		username: '',
-		about: '',
 		email: '',
 		password: '',
-		currency: '',
-		balance: 0
 	};
 </script>
 

@@ -5,16 +5,7 @@
 	import { GetRoom, FetchMessages, GetUserData } from '$lib/chat-rooms.ts';
 
 	const id: string = $page.params.id;
-	let currentRoom: ChatRoom = {
-		id: 0,
-		title: '',
-		createdat: '',
-		description: '',
-		members: [],
-		admins: [],
-		owner: 0,
-		messages: []
-	};
+	let currentRoom: ChatRoom = {};
 
 	let messages: Message[] = [];
 	let socket: WebSocket;
@@ -36,7 +27,9 @@
 		if (!USER) USER = {};
 	});
 
-	function formatDate(date: Date) {
+	function formatDate(dateStr: string) {
+		if (!dateStr) return;
+		const date = new Date(dateStr);
 		const hour = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
 		const minute = date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes();
 		const meridian = date.getHours() > 12 ? 'PM' : 'AM';
@@ -54,7 +47,7 @@
 					<div>
 						{message.text}
 					</div>
-					<span>{formatDate(new Date(message.sentat))}</span>
+					<span>{formatDate(String(message.sentat))}</span>
 				</div>
 			{/each}
 		</div>

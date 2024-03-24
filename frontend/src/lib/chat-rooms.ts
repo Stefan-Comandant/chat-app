@@ -27,7 +27,7 @@ export async function GetUsers() {
 	return []
 }
 
-export async function FetchMessages(id: number[]) {
+export async function FetchMessages(id: number[] | undefined) {
 		const body = JSON.stringify(id);
 		const data = await fetch('/api/messages', { ...FetchConfig, method: "PUT", body: body}).then((res) => res.json());
 
