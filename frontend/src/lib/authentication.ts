@@ -30,4 +30,5 @@ export async function Register(info: User) {
 		if (response.ok) response = await response.json();
     else response = JSON.parse(await response.text());
     console.log(response)
+    return response
 }
