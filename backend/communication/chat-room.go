@@ -83,7 +83,7 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": body})
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully created chat room!"})
 }
 
 func EditChatRoom(ctx *fiber.Ctx) error {
