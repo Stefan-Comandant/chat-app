@@ -27,6 +27,11 @@ export interface ChatRoom {
 	messages?: number[]
 }
 
+export interface HTTPResponse {
+  status?: string;
+  response?: any;
+}
+
 export const FetchConfig : any = {
 	method: "GET",
 	credentials: "include",
