@@ -2,10 +2,12 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { ChatRoom, Message, User } from '$lib/interfaces.ts';
+  import { FetchConfig } from "$lib/interfaces.ts"
 	import { GetRoom, FetchMessages, GetUserData } from '$lib/chat-rooms.ts';
 
 	const id: string = $page.params.id;
 	let currentRoom: ChatRoom = {};
+  let currentRoomMembers: User[] = []
 
 	let messages: Message[] = [];
 	let socket: WebSocket;
@@ -25,6 +27,10 @@
 		if (!messages) messages = [];
 		USER = await GetUserData();
 		if (!USER) USER = {};
+
+    currentRoomMembers = await GetRoomMembers()
+    if (!currentRoomMembers) currentRoomMembers = []
+    console.log(currentRoomMembers)
 	});
 
 	function formatDate(dateStr: string) {
@@ -36,7 +42,25 @@
 
 		return `${hour}:${minute} ${meridian}`;
 	}
+
+  function GetUsername(fromid: number, currentRoomMembers: User[]): string {
+    const member = currentRoomMembers.filter((member) => member.id === fromid)[0]
+    return member ? member.username: "";
+  }
+
+  async function GetRoomMembers() {
+    let response = await fetch(`/api/rooms/${id}/members`, FetchConfig)
+
+    if (response.ok) response = await response.json();
+    else response = await response.text();
+
+    return response.response;
+  }
 </script>
+
+<svelte:head>
+  <title>{currentRoom.title}</title>
+</svelte:head>
 
 <div class="container">
 	<div>
@@ -44,7 +68,10 @@
 		<div class="msg-container">
 			{#each messages as message (message.id)}
 				<div class="msg-content" class:sent-by-me={USER.id === message.fromid}>
-					<div>
+          {#if message.fromid !== USER.id}
+            <span><a href="/profiles/{message.fromid}">{GetUsername(message.fromid, currentRoomMembers)}</a></span>
+          {/if}
+          <div>
 						{message.text}
 					</div>
 					<span>{formatDate(String(message.sentat))}</span>
@@ -122,12 +149,17 @@
 		width: fit-content;
 		height: fit-content;
 		min-width: 250px;
-		padding: 26px 14px 12px 14px;
+		padding: 12px 14px;
 		border-radius: 20px;
 		word-wrap: break-word;
 		color: #000;
 		box-shadow: 1px 3px 3px 4px rgba(0, 0, 0, 0.25);
 		background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
 	}
 
 	.msg-content div {
@@ -139,9 +171,27 @@
 		display: flex;
 		justify-content: flex-end;
 		color: #c5c5c5;
-		font-size: 12px;
-		margin-top: 4px;
+		font-size: 9px;
+    position: absolute;
+    right: 14px;
+    bottom: 4px;
 	}
+
+  .msg-content span:nth-child(1){
+    position: relative;
+    color: #7A7A7A;
+    font-weight: 700;
+		font-size: 12px;
+    left: 0;
+    justify-content: flex-start;
+    width: fit-content;
+    height: fit-content;
+  }
+
+  .msg-content span:nth-child(1) a {
+    color: inherit;
+    text-decoration: none;
+  }
 
 	.msg-container {
 		display: flex;

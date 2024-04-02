@@ -59,6 +59,7 @@ func main() {
 	// Rooms
 	api.Get("/rooms", communication.GetChatRooms)
 	api.Get("/rooms/:id", communication.GetChatRoomByID)
+	api.Get("/rooms/:id/members", communication.GetChatRoomMembers)
 	api.Patch("/rooms", communication.EditChatRoom)
 	api.Post("/rooms", communication.CreateChatRoom)
 
