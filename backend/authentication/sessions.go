@@ -11,6 +11,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+var errExpiredCookie = errors.New("expiredCookie")
+
 type HasCookie interface {
 	Cookies(string, ...string) string
 }
@@ -47,20 +49,26 @@ func RemoveSessionFromDB(ID string) error {
 
 func GetUserIDFromSession(ctx HasCookie) (int, error) {
 	var cookie = ctx.Cookies("session_cookie")
-	if cookie == "" {
-		return -1, http.ErrNoCookie
-	}
+	if cookie == "" { return -1, http.ErrNoCookie }
 
 	var session Session
 
 	err := database.DB.Table("sessions").Where("id = ?", cookie).Select("expires_at", "user_id").First(&session).Error
+  if err != nil { return -1, err }
 
 	if session.ExpiresAt.Before(time.Now()) {
-		return -1, errors.New("expiredCookie")
+    err = database.DB.Table("sessions").Where("id = ?", cookie).Delete(&Session{}).Error
+    if err != nil { return -1, err }
+
+    database.DB.Table("users").Where("user_id = ?", session.UserID).Select("email_verified").Updates(&User{EmailVerified: false })
+		if err != nil { return -1, err }
+
+    return -1, errExpiredCookie
 	}
 
 	return session.UserID, err
 }
+
 func RemoveSessionAndCookie(ctx *fiber.Ctx) error {
 	var cookie = ctx.Cookies("session_cookie")
 	err := RemoveSessionFromDB(cookie)
