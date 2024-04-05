@@ -59,6 +59,12 @@ func VerifyEmailCode(ctx *fiber.Ctx) error {
     return err
   }
 
+  err = createSession(ctx, body.UserID)
+  if err != nil {
+     ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{ "status": "error", "response": err.Error() })
+    return err
+  }
+
   return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{ "status": "success", "response": "Successfully verified email address!"})
 }
 

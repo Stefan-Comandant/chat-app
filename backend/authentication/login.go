@@ -57,17 +57,25 @@ func Login(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	sessionID, err := GenerateSessionId(32)
+  err = createSession(ctx, user.ID)
+  if err != nil {
+    ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
+    return err
+  }
+	
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully logged in account!"})
+}
+
+func createSession(ctx *fiber.Ctx, userID int) error {
+  sessionID, err := GenerateSessionId(32)
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": "Failed to generate session ID!"})
 		return err
 	}
 
 	Logout(ctx)
 
-	err = AddSessionToDB(sessionID, user.ID)
+	err = AddSessionToDB(sessionID, userID)
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": "Failed to add session!"})
 		return err
 	}
 
@@ -84,5 +92,6 @@ func Login(ctx *fiber.Ctx) error {
 		HTTPOnly: true,
 		SameSite: "lax",
 	})
-	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully logged in account!"})
+
+  return err
 }
