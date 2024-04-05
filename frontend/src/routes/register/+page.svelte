@@ -1,17 +1,30 @@
 <script lang="ts">
-	import { VerifyWithCode } from '$lib/authentication.ts';
+	import { VerifyWithCode, Register} from '$lib/authentication.ts';
 	import RegisterForm from '$lib/components/forms/Register-Form.svelte';
+  import type { VerificationSession, HTTPResponse } from "$lib/interfaces.ts"
+  
+  let verification: VerificationSession = {
+    userid: 30,
+  }
 
-	let code = '';
+  let response: HTTPResponse = {
+    response: "",
+  }
 </script>
 
 <div class="body">
 	<div class="container">
-		<RegisterForm />
+		<RegisterForm response={response} on:register={async (event) => {
+      response = await Register(event.detail)
+
+      verification.userid = response.id;
+    }}/>
 	</div>
 
-	<input type="text" bind:value={code} />
-	<button type="button" on:click={() => VerifyWithCode(code)}>Verify</button>
+	<input type="text" bind:value={verification.code} />
+	<button type="button" on:click={async () => {
+    await VerifyWithCode(verification)
+  }}>Verify</button>
 </div>
 
 <style>

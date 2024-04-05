@@ -38,6 +38,7 @@ func main() {
 	database.DB.Table("sessions").AutoMigrate(&authentication.Session{})
 	database.DB.Table("messages").AutoMigrate(&communication.Message{})
 	database.DB.Table("chat_rooms").AutoMigrate(&communication.ChatRoom{})
+	database.DB.Table("verification_sessions").AutoMigrate(&authentication.VerificationSession{})
 
 	router := fiber.New()
 	router.Use(cors.New(cors.Config{
@@ -54,7 +55,7 @@ func main() {
 	api.Post("/register", authentication.Register)
 	api.Post("/login", authentication.Login)
 	api.Get("/logout", authentication.Logout)
-	api.Get("/code/:code", authentication.EmailCodeVerifier)
+  api.Post("/code", authentication.VerifyEmailCode)
 
 	// Rooms
 	api.Get("/rooms", communication.GetChatRooms)

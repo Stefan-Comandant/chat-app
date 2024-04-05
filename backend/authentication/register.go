@@ -5,16 +5,18 @@ import (
 	"go-chat-app/database"
 
 	"github.com/gofiber/fiber/v2"
+  "gorm.io/gorm/clause"
 )
 
 type User struct {
-	ID		 int     `json:"id" gorm:"primaryKey;autoIncrement"`
-	Username string  `json:"username" gorm:"not null;"`
-	About    string  `json:"about" gorm:"not null"`
-	Email    string  `json:"email" gorm:"not null;unique"`
-	Password string  `json:"password" gorm:"not null;"`
-	Currency string  `json:"currency"`
-	Balance  float64 `json:"balance" gorm:"not null;default:0"`
+	ID		        int     `json:"id" gorm:"primaryKey;autoIncrement"`
+	Username      string  `json:"username" gorm:"not null;"`
+	About         string  `json:"about" gorm:"not null"`
+	Email         string  `json:"email" gorm:"not null;unique"`
+	Password      string  `json:"password" gorm:"not null;"`
+	Currency      string  `json:"currency"`
+	Balance       float64 `json:"balance" gorm:"not null;default:0"`
+  EmailVerified bool    `json:"emailverified" gorm:"default:f"`
 }
 
 func Register(ctx *fiber.Ctx) error {
@@ -40,48 +42,38 @@ func Register(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	// Send email with verification code
 
-	verificationCode, err := GenerateSessionId(8)
-	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-		return err
-	}
-
-	emailBody := fmt.Sprintf("<p>Here is your verification code, bitch</p><h1>%v</h1>", verificationCode)
-
-	go CodeTimeOut()
-	// Send an email with the verification code
-	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
-	emailCodeChannel <- verificationCode
-
-	verificationCodeStatus := <-emailCodeChannel
-	if verificationCodeStatus == "failure" {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": "Invalid verification code!"})
-	}
-	if verificationCodeStatus == "timeout" {
-		return ctx.Status(fiber.StatusGatewayTimeout).JSON(&fiber.Map{"status": "timeout", "response": "Code verification timeout"})
-	}
-
-	//Hash password and store user in db
+		//Hash password and store user in db
 	hashedPass, err := HashPassword(body.Password)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
-	err = database.DB.Table("users").Create(&User{
-		Username: body.Username,
-		Email:    body.Email,
-		Password: hashedPass,
-		Currency: body.Currency,
-		Balance:  body.Balance,
-	}).Error
+  body.Password = hashedPass;
+
+	err = database.DB.Clauses(clause.Returning{}).Table("users").Create(&body).Error
 
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully registerd account!"})
+  code, err := GenerateSessionId(6)
+  if err != nil {
+    ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
+    return err
+  }
+
+	// Send email with verification code
+	emailBody := fmt.Sprintf("<h1>%v</h1>", code)
+
+	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
+  err = database.DB.Table("verification_sessions").Create(&VerificationSession{Code: code, UserID: body.ID}).Error
+   if err != nil {
+    ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
+    return err
+  }
+
+  return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully registerd account!", "id": body.ID})
 }
