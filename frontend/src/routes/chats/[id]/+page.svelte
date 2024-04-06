@@ -13,6 +13,7 @@
 	let socket: WebSocket;
 	let msg = '';
 
+  let datesGroup: string[] = []  
 	let USER: User | any = {};
 
 	onMount(async () => {
@@ -33,14 +34,31 @@
     console.log(currentRoomMembers)
 	});
 
-	function formatDate(dateStr: string) {
+	function formatDate(dateStr: string, goal: string) {
 		if (!dateStr) return;
 		const date = new Date(dateStr);
 		const hour = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
 		const minute = date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes();
 		const meridian = date.getHours() > 12 ? 'PM' : 'AM';
+    const day = date.getDate() > 10 ? date.getDate(): "0" + date.getDate();
+    const month = date.getMonth() > 10 ? date.getMonth(): "0" + date.getMonth()
+    const year = date.getFullYear()
 
-		return `${hour}:${minute} ${meridian}`;
+    const yearDate= `${day}-${month}-${year}`
+    const time = `${hour}:${minute} ${meridian}`
+
+    if (datesGroup.indexOf(yearDate) == -1) {
+      if (goal !== "time") { datesGroup = [...datesGroup, yearDate] }
+      return {
+        ofYear: yearDate,
+        ofDay: time,
+      };
+    }
+
+		return {
+      ofDay: time,
+      ofYear: "",
+    }
 	}
 
   function GetUsername(fromid: number, currentRoomMembers: User[]): string {
@@ -52,10 +70,11 @@
     let response = await fetch(`/api/rooms/${id}/members`, FetchConfig)
 
     if (response.ok) response = await response.json();
-    else response = await response.text();
+    else response = JSON.parse(await response.text());
 
     return response.response;
   }
+
 </script>
 
 <svelte:head>
@@ -74,8 +93,11 @@
           <div>
 						{message.text}
 					</div>
-					<span>{formatDate(String(message.sentat))}</span>
+					<span>{formatDate(String(message.sentat), "time").ofDay}</span>
 				</div>
+        {#if formatDate(String(message.sentat), "time").ofYear.length != 0}
+          <div style="display: {messages[messages.length - 1].id === message.id ? "none": "auto"}" class="date-display">{formatDate(String(message.sentat), "date").ofYear}</div>
+        {/if}
 			{/each}
 		</div>
 	</div>
@@ -179,7 +201,7 @@
 
   .msg-content span:nth-child(1){
     position: relative;
-    color: #7A7A7A;
+    color: #7a7a7a;
     font-weight: 700;
 		font-size: 12px;
     left: 0;
@@ -209,4 +231,13 @@
 		border: none;
 		margin-left: auto;
 	}
+
+  .date-display{
+    margin-left: auto;
+    margin-right: auto;
+    color: #ffffff;
+    background: #491cff;
+    padding: 4px 6px;
+    border-radius: 25px;
+  }
 </style>
