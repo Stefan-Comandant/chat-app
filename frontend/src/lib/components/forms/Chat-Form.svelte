@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { User, ChatRoom, HTTPResponse } from '$lib/interfaces.ts';
-	import { GetUsers, AddChatRoom } from '$lib/chat-rooms.ts';
+	import {  AddChatRoom } from '$lib/chat-rooms.ts';
 	import { onMount, createEventDispatcher } from 'svelte';
 	import EditButton from '../buttons/Edit-Button.svelte';
+  import { GetUsers } from "$lib/users.ts"
 
 	const dispatcher = createEventDispatcher();
 
