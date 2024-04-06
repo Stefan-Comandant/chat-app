@@ -1,6 +1,9 @@
 <script lang="ts">
 	import type { User, HTTPResponse } from '$lib/interfaces.ts';
-	import { Login } from '$lib/authentication.ts';
+  import { Login } from '$lib/authentication.ts';
+  import { createEventDispatcher } from "svelte"
+
+  const dispatch = createEventDispatcher();
 
 	let info: User = {
 		username: '',
@@ -8,14 +11,12 @@
 		password: '',
 	};
 
-  let response : HTTPResponse = {
-    response: "",
-  }
+  export let response: HTTPResponse;
 
 </script>
 
 <form on:submit|preventDefault={async () => {
-  response = await Login(info)
+  dispatch("login", info)
 }}>
 	<div>
 		<input type="text" placeholder="Enter your email" bind:value={info.email} />

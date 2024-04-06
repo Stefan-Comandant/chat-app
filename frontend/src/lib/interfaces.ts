@@ -32,6 +32,12 @@ export interface HTTPResponse {
   response?: any;
 }
 
+export interface VerificationSession {
+  id?: number;
+  code?: string;
+  userid?: number; 
+}
+
 export const FetchConfig : any = {
 	method: "GET",
 	credentials: "include",

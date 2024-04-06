@@ -1,4 +1,4 @@
-import type { User } from "$lib/interfaces.ts"
+import type { User, VerificationSession } from "$lib/interfaces.ts"
 import { FetchConfig } from "$lib/interfaces.ts"
 
 export async function Login(info: User) {
@@ -14,8 +14,15 @@ export async function Login(info: User) {
     return response
 }
 
-export async function VerifyWithCode(code: string){	
-		await fetch(`/api/code/${code}`);
+export async function VerifyWithCode(info: VerificationSession){	
+		let response = await fetch("/api/code/", { ...FetchConfig, method: "POST", body: JSON.stringify(info)} );
+
+    if (response.ok) response = await response.json();
+    else response = JSON.parse(await response.text());
+
+    console.log(response)
+
+    return response
 }
 
 export async function Logout() {
@@ -30,5 +37,6 @@ export async function Register(info: User) {
 		if (response.ok) response = await response.json();
     else response = JSON.parse(await response.text());
     console.log(response)
+
     return response
 }

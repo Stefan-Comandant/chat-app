@@ -1,6 +1,9 @@
 <script lang="ts">
 	import type { User, HTTPResponse } from '$lib/interfaces.ts';
 	import { Register } from '$lib/authentication.ts';
+  import { createEventDispatcher } from "svelte"
+
+  const dispatch = createEventDispatcher()
 
 	let info: User = {
 		username: '',
@@ -8,13 +11,11 @@
 		password: '',
 	};
 
-  let response : HTTPResponse = {
-    response: "",
-  }
+  export let response: HTTPResponse = {};
 </script>
 
-<form on:submit|preventDefault={async () => {
-  response = await Register(info)
+<form on:submit|preventDefault={() => {
+  dispatch("register", info)
 }}>
 	<div>
 		<input type="text" placeholder="Enter your username" bind:value={info.username} />
