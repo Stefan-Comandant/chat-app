@@ -44,6 +44,8 @@ func AddSessionToDB(ID string, UserID int) error {
 }
 
 func RemoveSessionFromDB(ID string) error {
+  err := database.DB.Table("users").Where("id = ?", ID).Updates(&authentication.User{EmailVerified: false}).Error
+  if err != nil { return err }
 	return database.DB.Table("sessions").Where("id = ?", ID).Delete(&Session{}).Error
 }
 

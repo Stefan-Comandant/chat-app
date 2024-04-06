@@ -67,9 +67,3 @@ func VerifyEmailCode(ctx *fiber.Ctx) error {
 
   return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{ "status": "success", "response": "Successfully verified email address!"})
 }
-
-func CodeTimeOut() {
-	time.Sleep(time.Second * 100)
-	<-emailCodeChannel
-	emailCodeChannel <- "timeout"
-}
