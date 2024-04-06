@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import type { User } from '$lib/interfaces.ts';
 	import { FetchConfig } from '$lib/interfaces.ts';
+  import { GetProfileByID } from "$lib/users.ts"
 
 	let profile: User = {
 		id: 0,
@@ -15,14 +16,8 @@
 	};
 	const id: string = $page.params.id;
 
-	async function GetProfileByID() {
-		const data = await fetch(`/api/users/${id}`, FetchConfig).then((res) => res.json());
-		if (data.status === 'success') return data.response;
-		return {};
-	}
-
 	onMount(async () => {
-		profile = await GetProfileByID();
+		profile = await GetProfileByID(id);
 		if (!profile)
 			profile = {
 				id: 0,

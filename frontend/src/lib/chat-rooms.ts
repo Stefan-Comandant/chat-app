@@ -31,16 +31,6 @@ export async function GetRoom(id: string) {
 		return {};
 }
 
-export async function GetUsers() {
-	let response = await fetch(`/api/users`, FetchConfig);
-
-  if (response.ok) response = await response.json();
-  else response = JSON.parse(await response.text());
-
-	if (response.status === 'success') return response.response;
-	return []
-}
-
 export async function FetchMessages(id: number[] | undefined) {
 		const body = JSON.stringify(id);
 		let response= await fetch('/api/messages', { ...FetchConfig, method: "PUT", body: body});
@@ -50,16 +40,4 @@ export async function FetchMessages(id: number[] | undefined) {
 
 		if (response.status === 'success') return response.response;
 		return [];
-}
-
-export async function GetUserData() {
-	let response = await fetch("/api/getUserData", FetchConfig)
-
-  if (response.ok) response = await response.json();
-  else response = JSON.parse(await response.text());
-
-	console.log(response)
-
-	if (response.status === "success") return response.response
-	return {}
 }

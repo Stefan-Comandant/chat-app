@@ -24,13 +24,13 @@ func Login(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	verificationCode, err := GenerateSessionId(8)
+	code, err := GenerateSessionId(8)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
-	var emailBody = fmt.Sprintf("<p>Here is your verification code, bitch</p><h1>%v</h1>", verificationCode)
+	var emailBody = fmt.Sprintf("<p>Here is your verification code, bitch</p><h1>%v</h1>", code)
 
 	var user User
 
@@ -52,6 +52,12 @@ func Login(ctx *fiber.Ctx) error {
   }
 	
 	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
+  err = database.DB.Table("verification_sessions").Create(&VerificationSession{Code: code, UserID: user.ID}).Error
+   if err != nil {
+    ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
+    return err
+  }
+
 
   return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully logged in account!", "id": user.ID})
 }

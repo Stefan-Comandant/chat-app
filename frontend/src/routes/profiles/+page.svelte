@@ -5,12 +5,6 @@
 
 	let profiles: User[] = [];
 
-	async function GetProfiles() {
-		const data = await fetch('/api/users', FetchConfig).then((res) => res.json());
-		if (data.status === 'success') return data.response;
-		return [];
-	}
-
 	onMount(async () => {
 		profiles = await GetProfiles();
 		if (!profiles) profiles = [];
