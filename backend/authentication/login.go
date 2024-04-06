@@ -45,12 +45,6 @@ func Login(ctx *fiber.Ctx) error {
 		return err
 	}
 
-  err = createSession(ctx, user.ID)
-  if err != nil {
-    ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
-    return err
-  }
-	
 	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
   err = database.DB.Table("verification_sessions").Create(&VerificationSession{Code: code, UserID: user.ID}).Error
    if err != nil {
