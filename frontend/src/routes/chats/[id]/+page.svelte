@@ -3,7 +3,8 @@
 	import { onMount } from 'svelte';
 	import type { ChatRoom, Message, User } from '$lib/interfaces.ts';
   import { FetchConfig } from "$lib/interfaces.ts"
-	import { GetRoom, FetchMessages, GetUserData } from '$lib/chat-rooms.ts';
+	import { GetRoom, FetchMessages } from '$lib/chat-rooms.ts';
+  import { GetUserData } from "$lib/users.ts"
 
 	const id: string = $page.params.id;
 	let currentRoom: ChatRoom = {};

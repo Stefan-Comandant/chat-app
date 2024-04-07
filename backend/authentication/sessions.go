@@ -4,11 +4,12 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
-	"go-chat-app/database"
 	"net/http"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"go-chat-app/database"
+	
+  "github.com/gofiber/fiber/v2"
 )
 
 var errExpiredCookie = errors.New("expiredCookie")
@@ -44,7 +45,7 @@ func AddSessionToDB(ID string, UserID int) error {
 }
 
 func RemoveSessionFromDB(ID string) error {
-  err := database.DB.Table("users").Where("id = ?", ID).Updates(&authentication.User{EmailVerified: false}).Error
+  err := database.DB.Table("users").Where("id = ?", ID).Updates(&User{EmailVerified: false}).Error
   if err != nil { return err }
 	return database.DB.Table("sessions").Where("id = ?", ID).Delete(&Session{}).Error
 }

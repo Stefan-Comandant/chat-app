@@ -1,8 +1,6 @@
 package authentication
 
 import (
-	"time"
-
   "go-chat-app/database"
 
 	"github.com/gofiber/fiber/v2"
