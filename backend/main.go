@@ -67,6 +67,7 @@ func main() {
 	// Users
 	api.Get("/users", communication.GetUsers)
 	api.Get("/users/:id", communication.GetUserByID)
+	api.Get("/getUserData", communication.GetUserData)
 
 	// Messages
 	api.Put("/messages", communication.GetMessages)
