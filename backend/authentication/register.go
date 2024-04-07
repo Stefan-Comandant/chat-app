@@ -1,7 +1,10 @@
 package authentication
 
 import (
+  "os"
 	"fmt"
+  "encoding/base64"
+
 	"go-chat-app/database"
 
 	"github.com/gofiber/fiber/v2"
@@ -9,14 +12,15 @@ import (
 )
 
 type User struct {
-	ID		        int     `json:"id" gorm:"primaryKey;autoIncrement"`
-	Username      string  `json:"username" gorm:"not null;"`
-	About         string  `json:"about" gorm:"not null"`
-	Email         string  `json:"email" gorm:"not null;unique"`
-	Password      string  `json:"password" gorm:"not null;"`
-	Currency      string  `json:"currency"`
-	Balance       float64 `json:"balance" gorm:"not null;default:0"`
-  EmailVerified bool    `json:"emailverified" gorm:"default:f"`
+	ID		         int     `json:"id" gorm:"primaryKey;autoIncrement"`
+  ProfilePicture string  `json:"profilepicture"`
+	Username       string  `json:"username" gorm:"not null;"`
+	About          string  `json:"about" gorm:"not null"`
+	Email          string  `json:"email" gorm:"not null;unique"`
+	Password       string  `json:"password" gorm:"not null;"`
+	Currency       string  `json:"currency"`
+	Balance        float64 `json:"balance" gorm:"not null;default:0"`
+  EmailVerified  bool    `json:"emailverified" gorm:"default:f"`
 }
 
 func Register(ctx *fiber.Ctx) error {
@@ -52,14 +56,52 @@ func Register(ctx *fiber.Ctx) error {
 
   body.Password = hashedPass;
 
-	err = database.DB.Clauses(clause.Returning{}).Table("users").Create(&body).Error
+  code, err := GenerateSessionId(6)
+  if err != nil {
+    ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
+    return err
+  }
 
+  var fileType string
+
+  switch string([]byte(body.ProfilePicture)[:15]) {
+  case "data:image/png;":
+    fileType = "png"
+  case "data:image/jpg;":
+    fileType = "jpg"
+  case "data:image/jpeg":
+    fileType = "jpeg"
+  }
+
+  fileName := fmt.Sprintf("../profiles/%v.%v", code, fileType)
+  
+
+  left, right := 22, 4 
+
+  if fileType == "jpeg" {
+    left = 23
+  }
+  
+  fileContent, err := base64.StdEncoding.DecodeString(string([]byte(body.ProfilePicture)[left:len(body.ProfilePicture) - right]))
+	if err != nil {
+		panic(err)
+	}
+
+  err = os.WriteFile(fileName, fileContent, 0755)
+  if err != nil {
+    ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
+    return err
+  }
+  
+  body.ProfilePicture = fmt.Sprintf("%v;%v", fileType, code)
+
+	err = database.DB.Clauses(clause.Returning{}).Table("users").Create(&body).Error
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
-  code, err := GenerateSessionId(6)
+  code, err = GenerateSessionId(6)
   if err != nil {
     ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
     return err
@@ -74,6 +116,6 @@ func Register(ctx *fiber.Ctx) error {
     ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
     return err
   }
-
+  
   return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully registerd account!", "id": body.ID})
 }

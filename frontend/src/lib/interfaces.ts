@@ -1,5 +1,6 @@
 export interface User {
 	id?: number;
+  profilepicture?: File,
 	username: string;
 	about?: string;
 	email: string;

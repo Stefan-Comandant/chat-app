@@ -4,11 +4,12 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
-	"go-chat-app/database"
 	"net/http"
 	"time"
 
-	"github.com/gofiber/fiber/v2"
+	"go-chat-app/database"
+	
+  "github.com/gofiber/fiber/v2"
 )
 
 var errExpiredCookie = errors.New("expiredCookie")
@@ -44,9 +45,17 @@ func AddSessionToDB(ID string, UserID int) error {
 }
 
 func RemoveSessionFromDB(ID string) error {
-  err := database.DB.Table("users").Where("id = ?", ID).Updates(&authentication.User{EmailVerified: false}).Error
+  var session Session
+
+  err := database.DB.Table("sessions").Where("id = ?", ID).First(&session).Error
   if err != nil { return err }
-	return database.DB.Table("sessions").Where("id = ?", ID).Delete(&Session{}).Error
+
+  if session.UserID != 0 {
+    err = database.DB.Table("users").Where("id = ?", session.UserID).Select("email_verified").Updates(&User{EmailVerified: false}).Error
+    if err != nil { return err }
+  }
+
+  return database.DB.Table("sessions").Where("id = ?", ID).Delete(&Session{}).Error
 }
 
 func GetUserIDFromSession(ctx HasCookie) (int, error) {
@@ -75,6 +84,17 @@ func RemoveSessionAndCookie(ctx *fiber.Ctx) error {
 	var cookie = ctx.Cookies("session_cookie")
 	err := RemoveSessionFromDB(cookie)
 
-	ctx.ClearCookie("session_cookie")
+	ctx.Cookie(&fiber.Cookie{
+		Name:     "session_cookie",
+		Value:    "",
+		Path:     "/",
+		Domain:   "localhost",
+		MaxAge:   1,
+		Expires:  time.Now(),
+		Secure:   true,
+		HTTPOnly: true,
+		SameSite: "lax",
+	})
+
 	return err
 }

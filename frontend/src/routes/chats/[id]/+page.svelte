@@ -3,7 +3,8 @@
 	import { onMount } from 'svelte';
 	import type { ChatRoom, Message, User } from '$lib/interfaces.ts';
   import { FetchConfig } from "$lib/interfaces.ts"
-	import { GetRoom, FetchMessages, GetUserData } from '$lib/chat-rooms.ts';
+	import { GetRoom, FetchMessages } from '$lib/chat-rooms.ts';
+  import { GetUserData } from "$lib/users.ts"
 
 	const id: string = $page.params.id;
 	let currentRoom: ChatRoom = {};
@@ -31,7 +32,6 @@
 
     currentRoomMembers = await GetRoomMembers()
     if (!currentRoomMembers) currentRoomMembers = []
-    console.log(currentRoomMembers)
 	});
 
 	function formatDate(dateStr: string, goal: string) {
@@ -75,6 +75,12 @@
     return response.response;
   }
 
+  function getProfilePicture(id: number, currentRoomMembers: User[]): string{
+    const result = currentRoomMembers.filter(member => member.id === id)[0]
+    if (!result) return ""
+    return result.profilepicture
+  }
+
 </script>
 
 <svelte:head>
@@ -86,15 +92,20 @@
 		<h2>Room {currentRoom.title}</h2>
 		<div class="msg-container">
 			{#each messages as message (message.id)}
-				<div class="msg-content" class:sent-by-me={USER.id === message.fromid}>
+        <div>
           {#if message.fromid !== USER.id}
-            <span><a href="/profiles/{message.fromid}">{GetUsername(message.fromid, currentRoomMembers)}</a></span>
+            <img class="msg-profile-picture" alt="pfp" src={getProfilePicture(message.fromid, currentRoomMembers)} />
           {/if}
-          <div>
-						{message.text}
-					</div>
-					<span>{formatDate(String(message.sentat), "time").ofDay}</span>
-				</div>
+          <div class="msg-content" class:sent-by-me={USER.id === message.fromid}>
+            {#if message.fromid !== USER.id}
+              <span><a href="/profiles/{message.fromid}">{GetUsername(message.fromid, currentRoomMembers)}</a></span>
+            {/if}
+            <div>
+						  {message.text}
+					  </div>
+					  <span>{formatDate(String(message.sentat), "time").ofDay}</span>
+				  </div>
+        </div>
         {#if formatDate(String(message.sentat), "time").ofYear.length != 0}
           <div style="display: {messages[messages.length - 1].id === message.id ? "none": "auto"}" class="date-display">{formatDate(String(message.sentat), "date").ofYear}</div>
         {/if}
@@ -118,6 +129,12 @@
 </div>
 
 <style>
+  .msg-container > div{
+    display: flex;
+    align-items: start;
+    gap: 14px;
+  }
+
 	.container {
 		display: flex;
 		flex-direction: column;
@@ -239,5 +256,11 @@
     background: #491cff;
     padding: 4px 6px;
     border-radius: 25px;
+  }
+
+  .msg-profile-picture{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
   }
 </style>

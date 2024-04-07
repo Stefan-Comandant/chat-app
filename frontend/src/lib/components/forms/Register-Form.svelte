@@ -12,6 +12,11 @@
 	};
 
   export let response: HTTPResponse = {};
+
+  let fileInput: any;
+
+  let showImage = false
+  let image;
 </script>
 
 <form on:submit|preventDefault={() => {
@@ -20,6 +25,25 @@
 	<div>
 		<input type="text" placeholder="Enter your username" bind:value={info.username} />
 	</div>
+  <div class="pfp-input-container">
+    <label for="file-input">Enter a profile picture</label>
+    <input id="file-input" type="file" accept=".jpg, .jpeg, .png" bind:this={fileInput} on:change={(event) => { 
+      const file = fileInput.files[0]
+
+      if (file) showImage = true;
+
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.addEventListener("load", () => { 
+        const result = reader.result
+        image.setAttribute("src", result)
+        info.profilepicture = result
+      })
+    }}>
+    {#if showImage}
+      <img bind:this={image} />
+    {/if}
+  </div>
 	<div>
 		<input type="text" placeholder="Enter your email" bind:value={info.email} />
 	</div>
@@ -38,6 +62,29 @@
 
   .success{
     color: lightgreen;
+  }
+
+  .pfp-input-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .pfp-input-container label{
+    font-size: 20px;
+    color: #a0a0a0;
+  }
+
+  .pfp-input-container input{
+    display: none;
+  }
+
+  .pfp-input-container img {
+    width: 60px;
+    height: 60px;
+    border: 1px solid black;
+    border-radius: 50%;
   }
 
 </style>
