@@ -93,7 +93,7 @@ func Register(ctx *fiber.Ctx) error {
     return err
   }
   
-  body.ProfilePicture = code
+  body.ProfilePicture = fmt.Sprintf("%v;%v", fileType, code)
 
 	err = database.DB.Clauses(clause.Returning{}).Table("users").Create(&body).Error
 	if err != nil {
