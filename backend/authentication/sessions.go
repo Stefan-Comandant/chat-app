@@ -51,9 +51,10 @@ func RemoveSessionFromDB(ID string) error {
   if err != nil { return err }
 
   if session.UserID != 0 {
-    err = database.DB.Table("users").Where("id = ?", session.UserID).Updates(&User{EmailVerified: false}).Error
+    err = database.DB.Table("users").Where("id = ?", session.UserID).Select("email_verified").Updates(&User{EmailVerified: false}).Error
     if err != nil { return err }
   }
+
   return database.DB.Table("sessions").Where("id = ?", ID).Delete(&Session{}).Error
 }
 
