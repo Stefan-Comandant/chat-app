@@ -1,6 +1,6 @@
 export interface User {
 	id?: number;
-  profilepicture?: string,
+	profilepicture?: string;
 	username?: string;
 	about?: string;
 	email?: string;
@@ -11,7 +11,7 @@ export interface User {
 
 export interface Message {
 	id?: number;
-	text: string
+	text: string;
 	sentat?: string;
 	fromid?: number;
 	toid?: number;
@@ -22,23 +22,23 @@ export interface ChatRoom {
 	title?: string;
 	createdat?: string;
 	description?: string;
-	members?: number[]
-	admins?: number[]
+	members?: number[];
+	admins?: number[];
 	owner?: number;
 	ownerData?: User;
-	messages?: number[]
+	messages?: number[];
 }
 
 export interface HTTPResponse {
-  status?: string;
-  response?: any;
+	status?: string;
+	response?: any;
 	id?: number;
 }
 
 export interface VerificationSession {
-  id?: number;
-  code?: string;
-  userid?: number; 
+	id?: number;
+	code?: string;
+	userid?: number;
 }
 
 export interface MessageDate {
@@ -46,14 +46,14 @@ export interface MessageDate {
 	ofDay?: string;
 }
 
-export const FetchConfig : any = {
-	method: "GET",
-	credentials: "include",
+export const FetchConfig: any = {
+	method: 'GET',
+	credentials: 'include',
 	headers: {
-		"Content-Type": "application/json",
-	},
-}
+		'Content-Type': 'application/json'
+	}
+};
 
-export interface Setting{
+export interface Setting {
 	LightMode: boolean;
 }

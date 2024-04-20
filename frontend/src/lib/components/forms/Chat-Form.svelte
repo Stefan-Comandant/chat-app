@@ -1,12 +1,9 @@
 <script lang="ts">
 	import type { User, ChatRoom, HTTPResponse } from '$lib/interfaces.ts';
 	import { AddChatRoom } from '$lib/chat-rooms.ts';
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import EditButton from '../buttons/Edit-Button.svelte';
 	import { GetUsers } from '$lib/users.ts';
-
-	const dispatcher = createEventDispatcher();
-
 	let users: User[] = [];
 	let openModal = false;
 
@@ -22,25 +19,25 @@
 	};
 
 	function AddMember(event: any, id: number) {
-		if (!event) return;
+		if (!event || !info.members?.length) return;
 
 		const target = event.target;
 
 		if (target.checked === true) {
 			info.members = [...info.members, id];
 		} else {
-			info.members = info.members.filter((member) => member != id);
+			info.members = info.members?.filter((member) => member != id);
 		}
 	}
 
 	function AddAdmin(event: any, id: number) {
-		if (!event) return;
+		if (!event || !info.admins?.length) return;
 		const target = event.target;
 
 		if (target.checked === true) {
 			info.admins = [...info.admins, id];
 		} else {
-			info.admins = info.admins.filter((admin) => admin != id);
+			info.admins = info.admins?.filter((admin) => admin != id);
 		}
 	}
 
@@ -51,7 +48,7 @@
 
 <form
 	on:submit|preventDefault={async () => {
-		if (!info.title.length) return;
+		if (!info.title?.length) return;
 
 		response = await AddChatRoom(info);
 	}}
@@ -70,7 +67,7 @@
 			>
 		</div>
 		<div class="members-container">
-			{#each info.members as member (member)}
+			{#each info.members || [] as member (member)}
 				<div class="member">
 					<img
 						class="profile-picture"
@@ -103,11 +100,11 @@
 				<div class="checks">
 					<div class="check">
 						<div>Member</div>
-						<input type="checkbox" on:input={(event) => AddMember(event, user.id)} />
+						<input type="checkbox" on:input={(event) => AddMember(event, user.id || 0)} />
 					</div>
 					<div class="check">
 						<div>Admin</div>
-						<input type="checkbox" on:input={(event) => AddAdmin(event, user.id)} />
+						<input type="checkbox" on:input={(event) => AddAdmin(event, user.id || 0)} />
 					</div>
 				</div>
 			</div>
