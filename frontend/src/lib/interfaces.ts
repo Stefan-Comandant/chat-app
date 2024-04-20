@@ -1,10 +1,10 @@
 export interface User {
 	id?: number;
-  profilepicture?: File,
-	username: string;
+  profilepicture?: string,
+	username?: string;
 	about?: string;
-	email: string;
-	password: string;
+	email?: string;
+	password?: string;
 	currency?: string;
 	balance?: number;
 }
@@ -14,7 +14,7 @@ export interface Message {
 	text: string
 	sentat?: string;
 	fromid?: number;
-	toid: number;
+	toid?: number;
 }
 
 export interface ChatRoom {
@@ -24,7 +24,8 @@ export interface ChatRoom {
 	description?: string;
 	members?: number[]
 	admins?: number[]
-	owner?: number
+	owner?: number;
+	ownerData?: User;
 	messages?: number[]
 }
 
@@ -37,6 +38,11 @@ export interface VerificationSession {
   id?: number;
   code?: string;
   userid?: number; 
+}
+
+export interface MessageDate {
+	ofYear?: string;
+	ofDay?: string;
 }
 
 export const FetchConfig : any = {

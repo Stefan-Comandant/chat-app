@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { User, ChatRoom, HTTPResponse } from '$lib/interfaces.ts';
-	import {  AddChatRoom } from '$lib/chat-rooms.ts';
+	import { AddChatRoom } from '$lib/chat-rooms.ts';
 	import { onMount, createEventDispatcher } from 'svelte';
 	import EditButton from '../buttons/Edit-Button.svelte';
-  import { GetUsers } from "$lib/users.ts"
+	import { GetUsers } from '$lib/users.ts';
 
 	const dispatcher = createEventDispatcher();
 
@@ -16,10 +16,10 @@
 	});
 
 	let info: ChatRoom = {
-    title: "",
-    members: [],
-    admins: [],
-  };
+		title: '',
+		members: [],
+		admins: []
+	};
 
 	function AddMember(event: any, id: number) {
 		if (!event) return;
@@ -43,10 +43,10 @@
 			info.admins = info.admins.filter((admin) => admin != id);
 		}
 	}
-  
-  let response: HTTPResponse = {
-    response: "",
-  }
+
+	let response: HTTPResponse = {
+		response: ''
+	};
 </script>
 
 <form
@@ -65,19 +65,27 @@
 	<div class="members-display">
 		<div class="members-title">
 			<span>Members</span>
-			<button class="edit-btn" type="button" on:click={() => (openModal = !openModal)}><EditButton /></button>
+			<button class="edit-btn" type="button" on:click={() => (openModal = !openModal)}
+				><EditButton /></button
+			>
 		</div>
 		<div class="members-container">
 			{#each info.members as member (member)}
 				<div class="member">
-					<img class="profile-picture" src={users.filter(user => user.id === member)[0].profilepicture} alt="Pfp" />
+					<img
+						class="profile-picture"
+						src={users.filter((user) => user.id === member)[0].profilepicture}
+						alt="Pfp"
+					/>
 					<span>{users.filter((user) => user.id === member)[0].username}</span>
 				</div>
 			{/each}
 		</div>
 	</div>
 	<button type="submit">Submit</button>
-  <span class:error={response.status === "error"} class:success={response.status === "success"}>{response.response}</span>
+	<span class:error={response.status === 'error'} class:success={response.status === 'success'}
+		>{response.response}</span
+	>
 </form>
 
 <dialog open={openModal}>
@@ -127,7 +135,7 @@
 		align-items: center;
 		gap: 10px;
 		font-size: 22px;
-    margin-bottom: 10px;
+		margin-bottom: 10px;
 	}
 
 	.members-container {
@@ -154,7 +162,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-    margin-bottom: 10px;
+		margin-bottom: 10px;
 	}
 
 	.details {
@@ -207,12 +215,11 @@
 		justify-content: center;
 		height: 40px;
 	}
-  .error{
-    color: red;
-  }
+	.error {
+		color: red;
+	}
 
-  .success{
-    color: lightgreen;
-  }
-
+	.success {
+		color: lightgreen;
+	}
 </style>

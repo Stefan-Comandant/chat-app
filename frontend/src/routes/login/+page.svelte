@@ -19,7 +19,9 @@
 
 	<div>
 		<input type="text" bind:value={verification.code} />
-		<button type="button" on:click={() => VerifyWithCode(verification)}>Verify</button>
+		<button type="button" on:click={async () => { 
+      response = await VerifyWithCode(verification)
+    }}>Verify</button>
 	</div>
 </div>
 

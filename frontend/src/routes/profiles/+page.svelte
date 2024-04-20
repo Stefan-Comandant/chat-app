@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { User } from '$lib/interfaces.ts';
-	import { FetchConfig } from '$lib/interfaces.ts';
-  import { GetProfiles } from "$lib/users.ts"
+	import { GetProfiles } from '$lib/users.ts';
 
 	let profiles: User[] = [];
 
@@ -10,7 +9,6 @@
 		profiles = await GetProfiles();
 		if (!profiles) profiles = [];
 	});
-
 </script>
 
 <h1>Other Users</h1>

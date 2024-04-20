@@ -1,43 +1,39 @@
 import type { ChatRoom } from "$lib/interfaces.ts"
 import { FetchConfig } from "$lib/interfaces.ts"
+import { GetProfileByID } from "./users.ts";
 
 export async function AddChatRoom(info: ChatRoom) {
-		let response = await fetch("/api/rooms", { ...FetchConfig, method: "POST", body: JSON.stringify(info)});
+		const response = await fetch("/api/rooms", { ...FetchConfig, method: "POST", body: JSON.stringify(info)});
+		const data = await response.json()
 
-    if (response.ok) response = await response.json();
-    else response = JSON.parse(await response.text());
-
-		console.log(response)
-    return response
+    return data
 }
 
-export async function GetChatRooms() {
-		let response = await fetch('/api/rooms', FetchConfig);
-	  
-	  if (response.ok) response = await response.json();
-    else response = JSON.parse(await response.text());
-
-    if (response.status === "success") return response.response
+export async function GetChatRooms(){
+		const response = await fetch('/api/rooms', FetchConfig);
+		const data = await response.json()
+		
+    if (data.status === "success") {
+			data.response.forEach(async (room: ChatRoom, i: number) => {
+				room.ownerData = await GetProfileByID(room.owner);
+				data.response[i] = room;
+			});	
+			return data.response}
 		return []
 }
 
 export async function GetRoom(id: string) {
-		let response = await fetch(`/api/rooms/${id}`, FetchConfig);
-    
-    if (response.ok) response = await response.json();
-    else response = JSON.parse(await response.text());
+		const response = await fetch(`/api/rooms/${id}`, FetchConfig);
+		const data = await response.json()
 
-		if (response.status === 'success') return response.response;
+		if (data.status === 'success') return data.response;
 		return {};
 }
 
 export async function FetchMessages(id: number[] | undefined) {
-		const body = JSON.stringify(id);
-		let response= await fetch('/api/messages', { ...FetchConfig, method: "PUT", body: body});
+		const response= await fetch('/api/messages', { ...FetchConfig, method: "PUT", body: JSON.stringify(id)});
+		const data = await response.json()
 
-    if (response.ok) response = await response.json();
-    else response = JSON.parse(await response.text());
-
-		if (response.status === 'success') return response.response;
+		if (data.status === 'success') return data.response;
 		return [];
 }
