@@ -103,37 +103,5 @@
 <a href="/chats/new">Create New Room</a>
 
 <style>
-	.popup {
-		margin: 0;
-		padding: 0;
-		border: none;
-	}
-
-	.popup div {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.room-container {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.room {
-		border-radius: 10px;
-		border: #000 solid 1px;
-		width: fit-content;
-		min-width: 425px;
-		padding: 15px 21px;
-	}
-
-	.room span {
-		color: #b0b0b0;
-		font-size: 12px;
-	}
-
-	.room {
-		text-decoration: none;
-		color: inherit;
-	}
+	@import '../../lib/css/chats.css';
 </style>

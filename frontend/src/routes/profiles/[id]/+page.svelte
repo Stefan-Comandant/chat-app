@@ -2,7 +2,6 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { User } from '$lib/interfaces.ts';
-	import { FetchConfig } from '$lib/interfaces.ts';
 	import { GetProfileByID } from '$lib/users.ts';
 
 	let profile: User = {
@@ -17,7 +16,7 @@
 	const id: string = $page.params.id;
 
 	onMount(async () => {
-		profile = await GetProfileByID(id);
+		profile = await GetProfileByID(parseInt(id));
 		if (!profile)
 			profile = {
 				id: 0,
@@ -40,35 +39,5 @@
 </div>
 
 <style>
-	.container img {
-		border-radius: 50%;
-		width: 200px;
-		height: 200px;
-	}
-
-	.container {
-		display: flex;
-		gap: 20px;
-		align-items: center;
-	}
-
-	.container div span {
-		color: #a0a0a0;
-	}
-
-	.container > div > div {
-		font-weight: 700;
-		font-size: 40px;
-	}
-
-	.container > div {
-		display: flex;
-		height: 100px;
-		width: fit-content;
-		flex-direction: column;
-		justify-content: space-around;
-		align-items: flex-start;
-		padding: 10px 20px;
-		border-radius: 25px;
-	}
+	@import '../../../lib/css/profile.css';
 </style>

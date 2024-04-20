@@ -16,7 +16,7 @@
 	let fileInput: any;
 
 	let showImage = false;
-	let image;
+	let image: HTMLImageElement;
 </script>
 
 <form
@@ -43,13 +43,13 @@
 				reader.readAsDataURL(file);
 				reader.addEventListener('load', () => {
 					const result = reader.result;
-					image.setAttribute('src', result);
-					info.profilepicture = result;
+					image.setAttribute('src', String(result));
+					info.profilepicture = String(result);
 				});
 			}}
 		/>
 		{#if showImage}
-			<img bind:this={image} />
+			<img bind:this={image} alt="pfp" />
 		{/if}
 	</div>
 	<div>
@@ -66,13 +66,6 @@
 
 <style>
 	@import '../../css/authentication.css';
-	.error {
-		color: red;
-	}
-
-	.success {
-		color: lightgreen;
-	}
 
 	.pfp-input-container {
 		display: flex;

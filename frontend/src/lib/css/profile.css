@@ -1,0 +1,31 @@
+.container img {
+	border-radius: 50%;
+	width: 200px;
+	height: 200px;
+}
+
+.container {
+	display: flex;
+	gap: 20px;
+	align-items: center;
+}
+
+.container div span {
+	color: #a0a0a0;
+}
+
+.container > div > div {
+	font-weight: 700;
+	font-size: 40px;
+}
+
+.container > div {
+	display: flex;
+	height: 100px;
+	width: fit-content;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: flex-start;
+	padding: 10px 20px;
+	border-radius: 25px;
+}
