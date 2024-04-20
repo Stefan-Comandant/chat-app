@@ -2,15 +2,17 @@
 	export let page: any = {};
 </script>
 
-<nav>
-	<a href="/" class:active={page.route.id === '/'}>Home</a>
-	<a href="/login" class:active={page.route.id === '/login'}>Login</a>
-	<a href="/register" class:active={page.route.id === '/register'}>Register</a>
-	<a href="/chats" class:active={page.route.id.includes('/chats')}>Chats</a>
-	<a href="/profiles" class:active={page.route.id.includes('/profiles')}>Profiles</a>
-	<a href="/settings" class:active={page.route.id.includes('/settings')}>Settings</a>
-	<img src={page.data.USER.profilepicture} alt="Pfp" />
-</nav>
+{#if page.data.USER.username !== 'Guest'}
+	<nav>
+		<a href="/" class:active={page.route.id === '/'}>Home</a>
+		<a href="/login" class:active={page.route.id === '/login'}>Login</a>
+		<a href="/register" class:active={page.route.id === '/register'}>Register</a>
+		<a href="/chats" class:active={page.route.id.includes('/chats')}>Chats</a>
+		<a href="/profiles" class:active={page.route.id.includes('/profiles')}>Profiles</a>
+		<a href="/settings" class:active={page.route.id.includes('/settings')}>Settings</a>
+		<img src={page.data.USER.profilepicture} alt="Pfp" />
+	</nav>
+{/if}
 
 <style>
 	img {

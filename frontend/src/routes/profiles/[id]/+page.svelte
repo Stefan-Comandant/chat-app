@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import type { User } from '$lib/interfaces.ts';
 	import { FetchConfig } from '$lib/interfaces.ts';
-  import { GetProfileByID } from "$lib/users.ts"
+	import { GetProfileByID } from '$lib/users.ts';
 
 	let profile: User = {
 		id: 0,
@@ -29,7 +29,6 @@
 				balance: 0
 			};
 	});
-
 </script>
 
 <div class="container">

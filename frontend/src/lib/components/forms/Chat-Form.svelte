@@ -215,11 +215,4 @@
 		justify-content: center;
 		height: 40px;
 	}
-	.error {
-		color: red;
-	}
-
-	.success {
-		color: lightgreen;
-	}
 </style>

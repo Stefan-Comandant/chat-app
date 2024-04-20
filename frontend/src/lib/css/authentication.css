@@ -43,3 +43,11 @@ form > button:hover {
 	border-color: #fff;
 	color: #fff;
 }
+
+.error {
+	color: red;
+}
+
+.success {
+	color: lightgreen;
+}

@@ -32,6 +32,7 @@ export interface ChatRoom {
 export interface HTTPResponse {
   status?: string;
   response?: any;
+	id?: number;
 }
 
 export interface VerificationSession {
