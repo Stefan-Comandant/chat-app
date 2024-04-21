@@ -8,7 +8,7 @@ export const load = async ({ cookies, route, fetch }: any) => {
 		response: {}
 	};
 	if (!cookie) {
-		if (!['/login', '/register'].includes(route.id)) redirect(303, '/login');
+		if (!['/login', '/register', '/authorize/[id]'].includes(route.id)) redirect(303, '/login');
 		return { USER: userData.response };
 	}
 

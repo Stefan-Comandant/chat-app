@@ -6,8 +6,6 @@ import (
 	"gopkg.in/gomail.v2"
 )
 
-var emailCodeChannel = make(chan string)
-
 func SendGoMail(from string, to string, subject string, body string) {
 	m := gomail.NewMessage()
 	m.SetHeader("From", from)

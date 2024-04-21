@@ -4,22 +4,14 @@
 	import type { User } from '$lib/interfaces.ts';
 	import { GetProfileByID } from '$lib/users.ts';
 
-	let profile: User = {
-		id: 0,
-		username: '',
-		about: '',
-		email: '',
-		password: '',
-		currency: '',
-		balance: 0
-	};
+	let profile: User = {};
 	const id: string = $page.params.id;
 
 	onMount(async () => {
-		profile = await GetProfileByID(parseInt(id));
+		profile = await GetProfileByID(id);
 		if (!profile)
 			profile = {
-				id: 0,
+				id: '',
 				username: '',
 				about: '',
 				email: '',

@@ -12,7 +12,7 @@
 	let verification: VerificationSession = {};
 
 	onMount(() => {
-		verification.userid = parseInt($page.params.id);
+		verification.userid = $page.params.id;
 	});
 </script>
 

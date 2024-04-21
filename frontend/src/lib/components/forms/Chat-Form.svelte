@@ -18,7 +18,7 @@
 		admins: []
 	};
 
-	function AddMember(event: any, id: number) {
+	function AddMember(event: any, id: string = '') {
 		if (!event || !info.members?.length) return;
 
 		const target = event.target;
@@ -30,7 +30,7 @@
 		}
 	}
 
-	function AddAdmin(event: any, id: number) {
+	function AddAdmin(event: any, id: string = '') {
 		if (!event || !info.admins?.length) return;
 		const target = event.target;
 
@@ -100,11 +100,11 @@
 				<div class="checks">
 					<div class="check">
 						<div>Member</div>
-						<input type="checkbox" on:input={(event) => AddMember(event, user.id || 0)} />
+						<input type="checkbox" on:input={(event) => AddMember(event, user.id || '')} />
 					</div>
 					<div class="check">
 						<div>Admin</div>
-						<input type="checkbox" on:input={(event) => AddAdmin(event, user.id || 0)} />
+						<input type="checkbox" on:input={(event) => AddAdmin(event, user.id || '')} />
 					</div>
 				</div>
 			</div>

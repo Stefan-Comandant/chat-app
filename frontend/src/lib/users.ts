@@ -1,6 +1,6 @@
 import { FetchConfig, type User } from '$lib/interfaces.ts';
 
-export async function GetProfileByID(id: number = 0): Promise<User> {
+export async function GetProfileByID(id: string = ''): Promise<User> {
 	const response = await fetch(`/api/users/${id}`, FetchConfig);
 	const data = await response.json();
 

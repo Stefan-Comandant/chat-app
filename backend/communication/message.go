@@ -2,7 +2,6 @@ package communication
 
 import (
 	"encoding/json"
-	"strconv"
 	"time"
 
 	"go-chat-app/authentication"
@@ -19,8 +18,8 @@ type Message struct {
 	ID     int       `json:"id" gorm:"primaryKey;autoIncrement"`
 	Text   string    `json:"text" gorm:"not null"`
 	SentAt time.Time `json:"sentat" gorm:"not null;default:CURRENT_TIMESTAMP"`
-	FromID int       `json:"fromid" gorm:"not null"`
-	ToID   int       `json:"toid" gorm:"not null"`
+	From   string    `json:"from" gorm:"not null"`
+	To     string    `json:"to" gorm:"not null"`
 	Type   string    `json:"type" gorm:"nont null"`
 }
 
@@ -32,14 +31,14 @@ func AddMessage(msg Message) (Message, error) {
 
 	var data ChatRoom
 
-	err = database.DB.Clauses(clause.Returning{}).Table("chat_rooms").Where("id = ?", msg.ToID).Find(&data).Error
+	err = database.DB.Clauses(clause.Returning{}).Table("chat_rooms").Where("id = ?", msg.To).Find(&data).Error
 	if err != nil {
 		return Message{}, err
 	}
 
 	data.Messages = append(data.Messages, int64(msg.ID))
 
-	err = database.DB.Table("chat_rooms").Where("id = ?", msg.ToID).Save(&data).Error
+	err = database.DB.Table("chat_rooms").Where("id = ?", msg.To).Save(&data).Error
 
 	return msg, err
 }
@@ -51,10 +50,10 @@ func GetMessages(ctx *fiber.Ctx) error {
 		return err
 	}
 
-  if userID == -1 {
-    ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
-    return nil
-  }
+	if userID == "" {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
+		return nil
+	}
 
 	var response []Message
 	var body []int64
@@ -63,7 +62,6 @@ func GetMessages(ctx *fiber.Ctx) error {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
-
 
 	err = database.DB.Table("messages").Where("id IN ?", body).Find(&response).Error
 	if err != nil {
@@ -93,11 +91,7 @@ func SendMessage(conn *websocket.Conn) {
 			break
 		}
 
-		ToID, err := strconv.Atoi(conn.Params("id"))
-		if err != nil {
-			delete(ActiveConnections, conn)
-			break
-		}
+		ToID := conn.Params("id")
 
 		userID, err := authentication.GetUserIDFromSession(conn)
 		if err != nil {
@@ -106,10 +100,10 @@ func SendMessage(conn *websocket.Conn) {
 		}
 
 		var message = Message{
-			Text:   string(msg.Text),
-			FromID: userID,
-			ToID:   ToID,
-			Type:   msg.Type,
+			Text: string(msg.Text),
+			From: userID,
+			To:   ToID,
+			Type: msg.Type,
 		}
 
 		msg, err = AddMessage(message)
@@ -142,10 +136,10 @@ func DeleteMessage(ctx *fiber.Ctx) error {
 		return err
 	}
 
-  if userID == -1 {
-    ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
-    return nil
-  }
+	if userID == "" {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
+		return nil
+	}
 
 	err = database.DB.Table("messages").Where("id = ?", body.ID).Delete(&body).Error
 	if err != nil {

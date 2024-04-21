@@ -35,11 +35,11 @@ export async function GetRoom(id: string) {
 	return {};
 }
 
-export async function FetchMessages(id: number[] | undefined) {
+export async function FetchMessages(ids: number[] | undefined) {
 	const response = await fetch('/api/messages', {
 		...FetchConfig,
 		method: 'PUT',
-		body: JSON.stringify(id)
+		body: JSON.stringify(ids)
 	});
 	const data = await response.json();
 
