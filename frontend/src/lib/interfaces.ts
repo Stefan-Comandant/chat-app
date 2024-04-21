@@ -38,7 +38,7 @@ export interface HTTPResponse {
 export interface VerificationSession {
 	id?: string;
 	code?: string;
-	userid?: number;
+	userid?: string;
 }
 
 export interface MessageDate {

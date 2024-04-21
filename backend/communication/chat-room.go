@@ -11,12 +11,12 @@ import (
 )
 
 type ChatRoom struct {
-	ID          string         `json:"id" gorm:"primaryKey;autoIncrement"`
+	ID          string         `json:"id" gorm:"primaryKey"`
 	Title       string         `json:"title" gorm:"not null"`
 	CreatedAt   time.Time      `json:"createdat" gorm:"not null;default:CURRENT_TIMESTAMP"`
 	Description string         `json:"description"`
-	Members     pq.StringArray `json:"members" gorm:"type:integer[]"`
-	Admins      pq.StringArray `json:"admins" gorm:"not null;type:integer[]"`
+	Members     pq.StringArray `json:"members" gorm:"type:text[]"`
+	Admins      pq.StringArray `json:"admins" gorm:"not null;type:text[]"`
 	Owner       string         `json:"owner" gorm:"not null"`
 	Messages    pq.Int64Array  `json:"messages" gorm:"type:integer[]"`
 	Type        string         `json:"type"`
