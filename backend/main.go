@@ -4,6 +4,7 @@ import (
 	"go-chat-app/authentication"
 	"go-chat-app/communication"
 	"go-chat-app/database"
+	"go-chat-app/middlewares"
 	"log"
 	"os"
 
@@ -48,20 +49,22 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	router.Use(LoggerMiddleware)
+	router.Use(middlewares.AuthMiddleware)
 
 	api := router.Group("/api")
+
 	// Authentication
 	api.Post("/register", authentication.Register)
 	api.Post("/login", authentication.Login)
 	api.Get("/logout", authentication.Logout)
-  api.Post("/code", authentication.VerifyEmailCode)
+	api.Post("/code", authentication.VerifyEmailCode)
 
 	// Rooms
 	api.Get("/rooms", communication.GetChatRooms)
 	api.Get("/rooms/:id", communication.GetChatRoomByID)
 	api.Get("/rooms/:id/members", communication.GetChatRoomMembers)
-	api.Patch("/rooms", communication.EditChatRoom)
+	api.Patch("/rooms/:id", communication.EditChatRoom)
+	api.Delete("/rooms/:id", communication.DeleteChatRoom)
 	api.Post("/rooms", communication.CreateChatRoom)
 
 	// Users
@@ -81,9 +84,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error while starting server: \n%v\n", err)
 	}
-}
-
-func LoggerMiddleware(ctx *fiber.Ctx) error {
-	log.Printf("New request To %v with method %v\n", ctx.Path(), ctx.Method())
-	return ctx.Next()
 }

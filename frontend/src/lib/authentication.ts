@@ -13,7 +13,7 @@ export async function Login(info: User) {
 }
 
 export async function VerifyWithCode(info: VerificationSession) {
-	const response = await fetch('/api/code/', {
+	const response = await fetch('/api/code', {
 		...FetchConfig,
 		method: 'POST',
 		body: JSON.stringify(info)
