@@ -13,13 +13,13 @@
 	});
 
 	let info: ChatRoom = {
-		title: '',
 		members: [],
 		admins: []
 	};
 
 	function AddMember(event: any, id: string = '') {
-		if (!event || !info.members?.length) return;
+		console.log(id);
+		if (!event || !id) return;
 
 		const target = event.target;
 
@@ -31,7 +31,7 @@
 	}
 
 	function AddAdmin(event: any, id: string = '') {
-		if (!event || !info.admins?.length) return;
+		if (!event || !id) return;
 		const target = event.target;
 
 		if (target.checked === true) {
@@ -67,7 +67,7 @@
 			>
 		</div>
 		<div class="members-container">
-			{#each info.members || [] as member (member)}
+			{#each info.members as member (member)}
 				<div class="member">
 					<img
 						class="profile-picture"
@@ -100,11 +100,23 @@
 				<div class="checks">
 					<div class="check">
 						<div>Member</div>
-						<input type="checkbox" on:input={(event) => AddMember(event, user.id || '')} />
+						<input
+							type="checkbox"
+							on:input={(event) => {
+								AddMember(event, user.id);
+								console.log(event, user.id);
+							}}
+						/>
 					</div>
 					<div class="check">
 						<div>Admin</div>
-						<input type="checkbox" on:input={(event) => AddAdmin(event, user.id || '')} />
+						<input
+							type="checkbox"
+							on:input={(event) => {
+								AddAdmin(event, user.id);
+								console.log(event, user.id);
+							}}
+						/>
 					</div>
 				</div>
 			</div>

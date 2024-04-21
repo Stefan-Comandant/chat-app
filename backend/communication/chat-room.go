@@ -7,6 +7,7 @@ import (
 	"go-chat-app/database"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
 
@@ -91,6 +92,7 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 	body.Owner = userID
 	body.Members = append(body.Members, userID)
 	body.Admins = append(body.Admins, userID)
+	body.ID = uuid.NewString()
 
 	err = database.DB.Table("chat_rooms").Create(&body).Error
 	if err != nil {
