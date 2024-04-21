@@ -1,11 +1,20 @@
 <script lang="ts">
 	import { type ChatRoom, type MessageDate, type User } from '$lib/interfaces.ts';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 
-	let dialog: any = {};
-	let modal: any = {};
+	let rooms: ChatRoom[] = [];
+	let USER: User = {};
+
+	let dialog: HTMLDialogElement;
+	let modal: HTMLDialogElement;
 	let selectMode = 'view';
 	let selectedRoom: ChatRoom = { admins: [], owner: '' };
+
+	onMount(() => {
+		rooms = $page.data.rooms;
+		USER = $page.data.USER;
+	});
 
 	function formatDate(dateStr: string): MessageDate {
 		if (!dateStr) return { ofYear: '', ofDay: '' };
@@ -28,7 +37,7 @@
 </script>
 
 <div>
-	{#each $page.data.rooms as room (room.id)}
+	{#each rooms as room (room.id)}
 		<div class="room-container">
 			<a
 				class="room"
@@ -54,10 +63,10 @@
 
 <dialog class="popup" bind:this={dialog}>
 	<div>
-		{#if $page.data.USER.id && selectedRoom.admins?.includes($page.data.USER.id)}
+		{#if USER.id && selectedRoom.admins?.includes(USER.id)}
 			<button on:click={() => modal.showModal()}>Edit Room</button>
 		{/if}
-		{#if $page.data.USER.id && selectedRoom.owner === $page.data.USER.id}
+		{#if USER.id && selectedRoom.owner === USER.id}
 			<button>Delete Room</button>
 		{/if}
 		<button>Quit Room</button>

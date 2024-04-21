@@ -63,6 +63,7 @@ func main() {
 	api.Get("/rooms", communication.GetChatRooms)
 	api.Get("/rooms/:id", communication.GetChatRoomByID)
 	api.Get("/rooms/:id/members", communication.GetChatRoomMembers)
+	api.Get("/rooms/:id/messages", communication.GetMessages)
 	api.Patch("/rooms/:id", communication.EditChatRoom)
 	api.Delete("/rooms/:id", communication.DeleteChatRoom)
 	api.Post("/rooms", communication.CreateChatRoom)
@@ -73,7 +74,6 @@ func main() {
 	api.Get("/getUserData", communication.GetUserData)
 
 	// Messages
-	api.Put("/messages", communication.GetMessages)
 	api.Delete("message/:id", communication.DeleteMessage)
 
 	// Websocket endpoints
