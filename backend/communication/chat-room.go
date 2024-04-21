@@ -11,15 +11,15 @@ import (
 )
 
 type ChatRoom struct {
-	ID          int           `json:"id" gorm:"primaryKey;autoIncrement"`
-	Title       string        `json:"title" gorm:"not null"`
-	CreatedAt   time.Time     `json:"createdat" gorm:"not null;default:CURRENT_TIMESTAMP"`
-	Description string        `json:"description"`
-	Members     pq.Int64Array `json:"members" gorm:"type:integer[]"`
-	Admins      pq.Int64Array `json:"admins" gorm:"not null;type:integer[]"`
-	Owner       int           `json:"owner" gorm:"not null"`
-	Messages    pq.Int64Array `json:"messages" gorm:"type:integer[]"`
-	Type        string        `json:"type"`
+	ID          string         `json:"id" gorm:"primaryKey;autoIncrement"`
+	Title       string         `json:"title" gorm:"not null"`
+	CreatedAt   time.Time      `json:"createdat" gorm:"not null;default:CURRENT_TIMESTAMP"`
+	Description string         `json:"description"`
+	Members     pq.StringArray `json:"members" gorm:"type:integer[]"`
+	Admins      pq.StringArray `json:"admins" gorm:"not null;type:integer[]"`
+	Owner       string         `json:"owner" gorm:"not null"`
+	Messages    pq.Int64Array  `json:"messages" gorm:"type:integer[]"`
+	Type        string         `json:"type"`
 }
 
 func GetChatRooms(ctx *fiber.Ctx) error {
@@ -29,10 +29,10 @@ func GetChatRooms(ctx *fiber.Ctx) error {
 		return err
 	}
 
-  if userID == -1 {
-    ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
-    return nil
-  }
+	if userID == "" {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
+		return nil
+	}
 
 	var response []ChatRoom
 
@@ -54,11 +54,11 @@ func GetChatRoomByID(ctx *fiber.Ctx) error {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
-  
-  if userID == -1 {
-    ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
-    return nil
-  }
+
+	if userID == "" {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
+		return nil
+	}
 
 	err = database.DB.Table("chat_rooms").Where("id = ? AND ? = ANY(members)", id, userID).First(&response).Error
 	if err != nil {
@@ -83,14 +83,14 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 		return err
 	}
 
-  if userID == -1 {
-    ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
-    return nil
-  }
+	if userID == "" {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
+		return nil
+	}
 
 	body.Owner = userID
-	body.Members = append(body.Members, int64(userID))
-	body.Admins = append(body.Admins, int64(userID))
+	body.Members = append(body.Members, userID)
+	body.Admins = append(body.Admins, userID)
 
 	err = database.DB.Table("chat_rooms").Create(&body).Error
 	if err != nil {
@@ -115,10 +115,10 @@ func EditChatRoom(ctx *fiber.Ctx) error {
 		return err
 	}
 
-  if userID == -1 {
-    ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
-    return nil
-  }
+	if userID == "" {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
+		return nil
+	}
 
 	err = database.DB.Table("chat_rooms").Where("id = ? AND ? ANY(members)", body.ID, userID).Save(&body).Error
 	if err != nil {
@@ -143,10 +143,10 @@ func DeleteChatRoom(ctx *fiber.Ctx) error {
 		return err
 	}
 
-  if userID == -1 {
-    ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
-    return nil
-  }
+	if userID == "" {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
+		return nil
+	}
 
 	err = database.DB.Table("chat_rooms").Where("id = ?", body.ID).Delete(&body).Error
 	if err != nil {

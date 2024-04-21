@@ -20,7 +20,7 @@ func GetUsers(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if userID == -1 {
+	if userID == "" {
 		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
 		return nil
 	}
@@ -101,7 +101,7 @@ func GetUserData(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if userID == -1 {
+	if userID == "" {
 		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
 		return nil
 	}

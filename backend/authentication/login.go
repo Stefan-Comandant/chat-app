@@ -46,18 +46,17 @@ func Login(ctx *fiber.Ctx) error {
 	}
 
 	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
-  err = database.DB.Table("verification_sessions").Create(&VerificationSession{Code: code, UserID: user.ID}).Error
-   if err != nil {
-    ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
-    return err
-  }
+	err = database.DB.Table("verification_sessions").Create(&VerificationSession{Code: code, UserID: user.ID}).Error
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+		return err
+	}
 
-
-  return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully logged in account!", "id": user.ID})
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully logged in account!", "id": user.ID})
 }
 
-func createSession(ctx *fiber.Ctx, userID int) error {
-  sessionID, err := GenerateSessionId(32)
+func createSession(ctx *fiber.Ctx, userID string) error {
+	sessionID, err := GenerateSessionId(32)
 	if err != nil {
 		return err
 	}
@@ -83,5 +82,5 @@ func createSession(ctx *fiber.Ctx, userID int) error {
 		SameSite: "lax",
 	})
 
-  return err
+	return err
 }
