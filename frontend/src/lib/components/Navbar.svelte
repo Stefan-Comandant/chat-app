@@ -56,6 +56,7 @@
 		padding: 10px 0;
 		top: 0;
 		border-bottom: 1px solid #b0b0b0;
+		z-index: 1000;
 	}
 
 	nav a {

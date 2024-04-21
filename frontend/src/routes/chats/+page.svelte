@@ -1,20 +1,11 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { type ChatRoom, type MessageDate, type User } from '$lib/interfaces.ts';
-	import { GetChatRooms } from '$lib/chat-rooms.ts';
 	import { page } from '$app/stores';
 
-	let rooms: ChatRoom[] = [];
 	let dialog: any = {};
 	let modal: any = {};
 	let selectMode = 'view';
 	let selectedRoom: ChatRoom = { admins: [], owner: '' };
-
-	onMount(async () => {
-		rooms = await GetChatRooms();
-		if (!rooms) rooms = [];
-		dialog.close();
-	});
 
 	function formatDate(dateStr: string): MessageDate {
 		if (!dateStr) return { ofYear: '', ofDay: '' };
@@ -37,7 +28,7 @@
 </script>
 
 <div>
-	{#each rooms as room (room.id)}
+	{#each $page.data.rooms as room (room.id)}
 		<div class="room-container">
 			<a
 				class="room"
