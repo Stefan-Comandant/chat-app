@@ -1,35 +1,34 @@
 <script lang="ts">
-	import { VerifyWithCode, Login } from '$lib/authentication.ts';
+	import { goto } from '$app/navigation';
+	import { Login } from '$lib/authentication.ts';
 	import LoginForm from '$lib/components/forms/Login-Form.svelte';
-  import type { VerificationSession, HTTPResponse } from "$lib/interfaces.ts"
+	import type { HTTPResponse } from '$lib/interfaces.ts';
 
-  let response: HTTPResponse = {
-    response: "",
-  }
-  
-	let verification: VerificationSession = {};
+	let response: HTTPResponse = {
+		response: ''
+	};
 </script>
 
-<div class="body">
-	<LoginForm response={response} on:login={async (event) => {
-    response = await Login(event.detail)
-
-    verification.userid = response.id;
-  }}/>
-
-	<div>
-		<input type="text" bind:value={verification.code} />
-		<button type="button" on:click={() => VerifyWithCode(verification)}>Verify</button>
-	</div>
+<div class="container">
+	<LoginForm
+		{response}
+		on:login={async (event) => {
+			if (!event.detail.email || !event.detail.password) {
+				response.status = 'error';
+				response.response = "You can't submit an empty form";
+				return;
+			}
+			response = await Login(event.detail);
+			goto(`/authorize/${response.id}`);
+		}}
+	/>
 </div>
 
 <style>
-	.body {
-		height: 100dvh;
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
+	.container {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
 	}
 </style>

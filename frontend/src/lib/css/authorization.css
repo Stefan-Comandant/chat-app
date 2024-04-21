@@ -1,0 +1,64 @@
+.container {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	border: 1px solid #b0b0b0;
+	border-radius: 25px;
+	min-height: 100px;
+	height: 350px;
+	padding: 20px 10px;
+}
+.container,
+.container > div {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.container > div {
+	gap: 10px;
+}
+
+.container {
+	gap: 50px;
+}
+
+.container > div > input {
+	border-radius: 20px;
+	padding: 10px 20px;
+	font-size: 20px;
+	max-width: 160px;
+	border: 1px solid #b0b0b0;
+	outline: none;
+}
+
+.container > button {
+	border: 1px solid #005fcf;
+	background: #fff;
+	color: #005fcf;
+	font-size: 25px;
+	transition:
+		background 0.5s,
+		color 0.5s;
+	cursor: pointer;
+	border-radius: 20px;
+	min-width: 200px;
+	padding: 10px 0;
+}
+
+.container > button:focus,
+.container > button:hover {
+	background: #005fcf;
+	border-color: #fff;
+	color: #fff;
+}
+
+.error {
+	color: red;
+}
+
+.success {
+	color: lightgreen;
+}

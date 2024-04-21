@@ -32,14 +32,14 @@ func GetUsers(ctx *fiber.Ctx) error {
 	}
 
 	for i, user := range response {
-    encoding, err := getProfilePictureEncoding(user)
-    if err != nil {
-      ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
-      return err
-    }
+		encoding, err := getProfilePictureEncoding(user)
+		if err != nil {
+			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+			return err
+		}
 		response[i].ProfilePicture = string(encoding)
-  }
-  return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
+	}
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
 }
 
 func GetUserByID(ctx *fiber.Ctx) error {
@@ -53,11 +53,11 @@ func GetUserByID(ctx *fiber.Ctx) error {
 		return err
 	}
 
-  encoding, err := getProfilePictureEncoding(response)
-  if err != nil {
-    ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error() })
-    return err
-  }
+	encoding, err := getProfilePictureEncoding(response)
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+		return err
+	}
 	response.ProfilePicture = string(encoding)
 
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
@@ -81,13 +81,13 @@ func GetChatRoomMembers(ctx *fiber.Ctx) error {
 	}
 
 	for i, user := range response {
-    encoding, err := getProfilePictureEncoding(user)
-    if err != nil {
-		  ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-      return err
-    }
-	  response[i].ProfilePicture = string(encoding)
-  }
+		encoding, err := getProfilePictureEncoding(user)
+		if err != nil {
+			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+			return err
+		}
+		response[i].ProfilePicture = string(encoding)
+	}
 
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
 }
@@ -112,39 +112,41 @@ func GetUserData(ctx *fiber.Ctx) error {
 		return err
 	}
 
-  encoding, err := getProfilePictureEncoding(response)
-  if err != nil {
-    ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+	encoding, err := getProfilePictureEncoding(response)
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
-  }
+	}
 
-  response.ProfilePicture = encoding
+	response.ProfilePicture = encoding
 
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
 }
 
 func getProfilePictureEncoding(user authentication.User) (string, error) {
-  var fileType string
-  code := string([]byte(user.ProfilePicture)[4:])
+	var fileType string
+	code := string([]byte(user.ProfilePicture)[4:])
 
-  switch string([]byte(user.ProfilePicture)[:4]) {
-  case "png;":
-    fileType = "png"
-  case "jpg;":
-      fileType = "jpg"
-  case "jpeg":
-    fileType = "jpeg"
-    code = string([]byte(user.ProfilePicture)[5:])
-  }
+	switch string([]byte(user.ProfilePicture)[:4]) {
+	case "png;":
+		fileType = "png"
+	case "jpg;":
+		fileType = "jpg"
+	case "jpeg":
+		fileType = "jpeg"
+		code = string([]byte(user.ProfilePicture)[5:])
+	}
 
-  path := fmt.Sprintf("../profiles/%v.%v", code, fileType)
+	path := fmt.Sprintf("../profiles/%v.%v", code, fileType)
 
 	content, err := os.ReadFile(path)
-	if err != nil { return "", err }
+	if err != nil {
+		return "", err
+	}
 
-  dst := make([]byte, base64.StdEncoding.EncodedLen(len(content)))
+	dst := make([]byte, base64.StdEncoding.EncodedLen(len(content)))
 	base64.StdEncoding.Encode(dst, content)
 
-  fullEncoding := fmt.Sprintf("data:image/%v;base64,%v", fileType, string(dst))
-  return fullEncoding, err
+	fullEncoding := fmt.Sprintf("data:image/%v;base64,%v", fileType, string(dst))
+	return fullEncoding, err
 }

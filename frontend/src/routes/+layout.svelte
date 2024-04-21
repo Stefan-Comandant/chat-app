@@ -20,6 +20,6 @@
 	}
 
 	main {
-		padding-top: 38px;
+		padding-top: 60px;
 	}
 </style>
