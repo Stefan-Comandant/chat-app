@@ -8,7 +8,7 @@
 	let dialog: any = {};
 	let modal: any = {};
 	let selectMode = 'view';
-	let selectedRoom: ChatRoom = { admins: [], owner: 0 };
+	let selectedRoom: ChatRoom = { admins: [], owner: '' };
 
 	onMount(async () => {
 		rooms = await GetChatRooms();

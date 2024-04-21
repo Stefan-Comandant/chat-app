@@ -1,5 +1,5 @@
 export interface User {
-	id?: number;
+	id?: string;
 	profilepicture?: string;
 	username?: string;
 	about?: string;
@@ -13,18 +13,18 @@ export interface Message {
 	id?: number;
 	text: string;
 	sentat?: string;
-	fromid?: number;
-	toid?: number;
+	from?: string;
+	to?: string;
 }
 
 export interface ChatRoom {
-	id?: number;
+	id?: string;
 	title?: string;
 	createdat?: string;
 	description?: string;
-	members?: number[];
-	admins?: number[];
-	owner?: number;
+	members?: string[];
+	admins?: string[];
+	owner?: string;
 	ownerData?: User;
 	messages?: number[];
 }
@@ -32,11 +32,11 @@ export interface ChatRoom {
 export interface HTTPResponse {
 	status?: string;
 	response?: any;
-	id?: number;
+	id?: string;
 }
 
 export interface VerificationSession {
-	id?: number;
+	id?: string;
 	code?: string;
 	userid?: number;
 }

@@ -60,8 +60,8 @@
 		displayContent = true;
 	});
 
-	function GetUsername(fromid: number = 0, members: User[] = []): string {
-		const member = members.filter((member) => member.id === fromid)[0];
+	function GetUsername(from: string = '', members: User[] = []): string {
+		const member = members.filter((member) => member.id === from)[0];
 		if (!member || !member.username) return '';
 		return member.username;
 	}
@@ -73,7 +73,7 @@
 		return data.response;
 	}
 
-	function getProfilePicture(id: number = 0, members: User[] = []): string {
+	function getProfilePicture(id: string = '', members: User[] = []): string {
 		const result = members.filter((member) => member.id === id)[0];
 		if (!result || !result.profilepicture) return '';
 		return result.profilepicture;
@@ -93,18 +93,18 @@
 			<div class="msg-container">
 				{#each messages as message (message.id)}
 					<div>
-						{#if message.fromid != $page.data.USER.id}
+						{#if message.from != $page.data.USER.id}
 							<img
 								class="msg-profile-picture"
 								alt="pfp"
-								src={getProfilePicture(message.fromid, currentRoomMembers)}
+								src={getProfilePicture(message.from, currentRoomMembers)}
 							/>
 						{/if}
-						<div class="msg-content" class:sent-by-me={$page.data.USER.id === message.fromid}>
-							{#if message.fromid !== $page.data.USER.id}
+						<div class="msg-content" class:sent-by-me={$page.data.USER.id === message.from}>
+							{#if message.from !== $page.data.USER.id}
 								<span
-									><a href="/profiles/{message.fromid}"
-										>{GetUsername(message.fromid, currentRoomMembers)}</a
+									><a href="/profiles/{message.from}"
+										>{GetUsername(message.from, currentRoomMembers)}</a
 									></span
 								>
 							{/if}
