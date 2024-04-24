@@ -3,29 +3,20 @@ form {
 	flex-direction: column;
 	align-items: center;
 	gap: 24px;
-	height: fit-content;
-	min-height: 426px;
-	width: fit-content;
-	min-width: 350px;
+	height: 426px;
+	min-height: fit-content;
+	width: 350px;
+	min-width: fit-content;
 	border: #000 solid 1px;
 	padding: 24px 15px;
 	border-radius: 25px;
 }
-
-form div input {
-	border-radius: 25px;
-	border: black solid 1px;
-	width: 320px;
-	height: 43px;
-	font-size: 20px;
-	padding-left: 10px;
-}
-
 form > button {
 	background: hsl(0, 0%, 100%);
 	border: #005fcf solid 2px;
 	cursor: pointer;
 	border-radius: 25px;
+	min-width: fit-content;
 	width: 240px;
 	height: 43px;
 	color: #005fcf;
@@ -33,7 +24,6 @@ form > button {
 	transition:
 		background 0.5s,
 		color 0.5s;
-	/* box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1); */
 	margin-top: auto;
 }
 
@@ -50,4 +40,52 @@ form > button:hover {
 
 .success {
 	color: lightgreen;
+}
+form div input {
+	border-radius: 25px;
+	border: black solid 1px;
+	width: 320px;
+	height: 43px;
+	font-size: 20px;
+	padding-left: 10px;
+}
+@media only screen and (max-height: 660px) {
+	form {
+		height: 246px;
+		gap: 14px;
+	}
+}
+
+@media only screen and (max-height: 260px) {
+	form {
+		height: 146px;
+		gap: 8px;
+	}
+}
+
+@media only screen and (max-width: 390px) {
+	form > div > input {
+		width: 260px;
+	}
+
+	form {
+		width: 280px;
+	}
+
+	form button {
+		width: 147px;
+	}
+}
+
+@media only screen and (max-width: 330px) {
+	form div input {
+		width: 120px;
+	}
+	form button {
+		width: 100px;
+	}
+
+	form {
+		width: 180px;
+	}
 }

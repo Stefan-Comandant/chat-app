@@ -1,5 +1,6 @@
 <script lang="ts">
 	export let page: any = {};
+	const darkMode = true;
 
 	const options = [
 		{
@@ -30,9 +31,11 @@
 </script>
 
 {#if Object.keys(page.data.USER).length}
-	<nav>
+	<nav class:dark={darkMode}>
 		{#each options as option}
-			<a href={option.route} class:active={page.route.id === option.route}>{option.text}</a>
+			<a class:dark={darkMode} href={option.route} class:active={page.route.id === option.route}
+				>{option.text}</a
+			>
 		{/each}
 		<img src={page.data.USER.profilepicture} alt="Pfp" />
 	</nav>
@@ -46,17 +49,25 @@
 	}
 
 	nav {
+		min-height: fit-content;
+		height: 60px;
+		width: 100%;
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
-		position: fixed;
-		left: 0;
-		right: 0;
-		height: fit-content;
-		padding: 10px 0;
-		top: 0;
 		border-bottom: 1px solid #b0b0b0;
+		overflow-x: scroll;
 		z-index: 1000;
+		background: #fff;
+	}
+
+	nav::-webkit-scrollbar {
+		display: none;
+	}
+
+	nav.dark {
+		border-bottom: 2px solid #d6d6d6;
+		background: #02042a;
 	}
 
 	nav a {
@@ -67,7 +78,15 @@
 		height: fit-content;
 	}
 
+	nav a.dark {
+		color: #fff;
+	}
+
 	.active {
 		background: #d6d6d6;
+	}
+
+	.active.dark {
+		background: rgba(255, 255, 255, 0.2);
 	}
 </style>

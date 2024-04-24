@@ -1,19 +1,21 @@
 <script lang="ts">
 	import type { Setting } from '$lib/interfaces.ts';
+	import { onMount } from 'svelte';
 
-	let settings: string | Setting | null = window.localStorage.getItem('settings');
+	let settings: Setting;
 
-	if (!settings) {
-		settings = {
-			LightMode: false
-		};
-	} else {
-		settings = JSON.parse(settings);
+	function UpdateSetting(setting: Setting) {
+		localStorage.setItem('settings', JSON.stringify(setting));
 	}
 
-	function UpdateSetting() {
-		localStorage.setItem('settings', JSON.stringify(settings));
-	}
+	onMount(() => {
+		settings = JSON.parse(String(localStorage.getItem('settings')));
+		if (!settings)
+			settings = {
+				LightMode: false
+			};
+		console.log(localStorage);
+	});
 </script>
 
 <div>

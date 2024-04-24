@@ -19,7 +19,12 @@
 		margin: 0;
 	}
 
-	main {
-		padding-top: 60px;
+	header {
+		height: 60px;
+		z-index: 1000;
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
 	}
 </style>

@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import type { User } from '$lib/interfaces.ts';
-	import { GetProfiles } from '$lib/users.ts';
+	import { page } from '$app/stores';
 
 	let profiles: User[] = [];
 
-	onMount(async () => {
-		profiles = await GetProfiles();
-		if (!profiles) profiles = [];
+	onMount(() => {
+		profiles = $page.data.profiles;
 	});
 </script>
 

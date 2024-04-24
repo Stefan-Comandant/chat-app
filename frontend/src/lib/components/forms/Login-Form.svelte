@@ -18,7 +18,7 @@
 	}}
 >
 	<div>
-		<input type="text" placeholder="Enter your email" bind:value={info.email} />
+		<input type="email" placeholder="Enter your email" bind:value={info.email} />
 	</div>
 	<div>
 		<input type="text" placeholder="Enter your password" bind:value={info.password} />

@@ -1,6 +1,7 @@
 import { FetchConfig, type ChatRoom } from '$lib/interfaces.ts';
 
-export const load = async ({ fetch }: any) => {
+export const load = async ({ fetch, parent }: any) => {
+	await parent();
 	let rooms: { status?: string; response?: ChatRoom[] } = {
 		status: '',
 		response: []

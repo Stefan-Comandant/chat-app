@@ -1,6 +1,7 @@
 import { FetchConfig, type User } from '$lib/interfaces.ts';
 
-export const load = async ({ fetch, params }: any) => {
+export const load = async ({ fetch, params, parent }: any) => {
+	await parent();
 	let profile: { status?: string; response?: User } = {
 		status: '',
 		response: {}
