@@ -1,3 +1,30 @@
+form.dark {
+	background: #02042a;
+	border: 2px solid #fff;
+}
+
+form.dark div input {
+	background: #151ca9;
+	color: #fff;
+}
+
+form.dark div input::placeholder {
+	color: #ffffff9c;
+}
+
+form.dark > button {
+	background: #151ca9;
+	color: #fff;
+	border: none;
+}
+
+form.dark > button:hover,
+form.dark > button:focus {
+	background: #fff;
+	color: #151ca9;
+	border: none;
+}
+
 form {
 	display: flex;
 	flex-direction: column;
@@ -10,9 +37,20 @@ form {
 	border: #000 solid 1px;
 	padding: 24px 15px;
 	border-radius: 25px;
+	background: #fff;
 }
+
+form div input {
+	border-radius: 25px;
+	border: black solid 1px;
+	width: 320px;
+	height: 43px;
+	font-size: 20px;
+	padding-left: 10px;
+}
+
 form > button {
-	background: hsl(0, 0%, 100%);
+	background: #ffffff;
 	border: #005fcf solid 2px;
 	cursor: pointer;
 	border-radius: 25px;
@@ -41,22 +79,14 @@ form > button:hover {
 .success {
 	color: lightgreen;
 }
-form div input {
-	border-radius: 25px;
-	border: black solid 1px;
-	width: 320px;
-	height: 43px;
-	font-size: 20px;
-	padding-left: 10px;
-}
-@media only screen and (max-height: 660px) {
+@media only screen and (max-height: 600px) {
 	form {
 		height: 246px;
 		gap: 14px;
 	}
 }
 
-@media only screen and (max-height: 260px) {
+@media only screen and (max-height: 200px) {
 	form {
 		height: 146px;
 		gap: 8px;

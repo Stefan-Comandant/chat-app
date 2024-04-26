@@ -20,6 +20,12 @@
 	padding: 10px;
 }
 
+.container.dark .msg-input textarea {
+	color: #fff;
+	background: #303030;
+	border: 2px solid #fff;
+}
+
 .container .msg-input {
 	display: flex;
 	align-items: center;
@@ -53,6 +59,19 @@
 	color: #fff;
 }
 
+.container.dark .msg-input button {
+	background: #151ca9;
+	color: #fff;
+	border: none;
+}
+
+.container.dark .msg-input button:focus,
+.container.dark .msg-input button:hover {
+	background: #fff;
+	color: #151ca9;
+	border: none;
+}
+
 .msg-content {
 	width: fit-content;
 	height: fit-content;
@@ -68,6 +87,11 @@
 	justify-content: center;
 	gap: 6px;
 	position: relative;
+}
+
+.container.dark .msg-content {
+	color: #fff;
+	background: #303030;
 }
 
 .msg-content div {
@@ -111,6 +135,10 @@
 	background-position-y: bottom;
 }
 
+.msg-container::-webkit-scrollbar {
+	display: none;
+}
+
 .sent-by-me {
 	background: #479cff;
 	color: #fff;
@@ -118,11 +146,15 @@
 	margin-left: auto;
 }
 
+.container.dark .sent-by-me {
+	background: #02042a;
+}
+
 .date-display {
 	margin-left: auto;
 	margin-right: auto;
 	color: #ffffff;
-	background: #491cff;
+	background: #377206;
 	padding: 4px 6px;
 	border-radius: 25px;
 }
@@ -136,6 +168,10 @@
 .room-title {
 	display: flex;
 	justify-content: center;
+}
+
+.container.dark .room-title {
+	color: #fff;
 }
 
 .room-title span {

@@ -8,6 +8,10 @@
 	border-radius: 25px;
 }
 
+h1.dark {
+	color: #fff;
+}
+
 .account > div > span {
 	color: #a0a0a0;
 }
@@ -17,8 +21,16 @@
 	justify-content: space-around;
 }
 
+.account.dark > div > div {
+	color: #fff;
+}
+
 .account:hover {
-	border: #000 1px solid;
+	border: 1px solid #000;
+}
+
+.account.dark:hover {
+	border: 2px solid #fff;
 }
 
 .account > img {

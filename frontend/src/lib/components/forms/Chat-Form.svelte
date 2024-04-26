@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import EditButton from '../buttons/Edit-Button.svelte';
 	import { GetUsers } from '$lib/users.ts';
+	import { store } from '../../../stores.ts';
 	let users: User[] = [];
 	let openModal = false;
 
@@ -41,12 +42,15 @@
 		}
 	}
 
+	$: darkMode = !$store.LightMode;
+
 	let response: HTTPResponse = {
 		response: ''
 	};
 </script>
 
 <form
+	class:dark={!!darkMode}
 	on:submit|preventDefault={async () => {
 		if (!info.title?.length) return;
 
@@ -63,7 +67,7 @@
 		<div class="members-title">
 			<span>Members</span>
 			<button class="edit-btn" type="button" on:click={() => (openModal = !openModal)}
-				><EditButton /></button
+				><EditButton stroke={darkMode ? '#ffffff' : '#000000'} /></button
 			>
 		</div>
 		<div class="members-container">
@@ -85,7 +89,7 @@
 	>
 </form>
 
-<dialog open={openModal}>
+<dialog open={openModal} class:dark={!!darkMode}>
 	<div>
 		{#each users as user (user.id)}
 			<div class="account">

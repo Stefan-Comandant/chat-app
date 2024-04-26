@@ -2,6 +2,7 @@
 	import { type ChatRoom, type MessageDate, type User } from '$lib/interfaces.ts';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import { store } from '../../stores.ts';
 
 	let rooms: ChatRoom[] = [];
 	let USER: User = {};
@@ -15,6 +16,8 @@
 		rooms = $page.data.rooms;
 		USER = $page.data.USER;
 	});
+
+	$: darkMode = !$store.LightMode;
 
 	function formatDate(dateStr: string): MessageDate {
 		if (!dateStr) return { ofYear: '', ofDay: '' };
@@ -38,9 +41,10 @@
 
 <div>
 	{#each rooms as room (room.id)}
-		<div class="room-container">
+		<div class="room-container" class:dark={!!darkMode}>
 			<a
 				class="room"
+				class:dark={!!darkMode}
 				href="/chats/{room.id}"
 				on:contextmenu|preventDefault={async (event) => {
 					dialog.show();

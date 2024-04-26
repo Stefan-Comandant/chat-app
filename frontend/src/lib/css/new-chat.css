@@ -26,6 +26,10 @@
 	overflow-y: scroll;
 }
 
+.members-container::-webkit-scrollbar {
+	display: none;
+}
+
 dialog {
 	width: 427px;
 	height: 427px;
@@ -34,6 +38,11 @@ dialog {
 	transform: translate(-50%, -50%);
 	border-radius: 25px;
 	border: 1px solid #000;
+}
+
+dialog.dark {
+	background: #121212;
+	border: 2px solid #fff;
 }
 
 .account {
@@ -55,12 +64,29 @@ dialog {
 	padding: 18px 16px;
 }
 
-.details div {
+.details > div {
 	font-size: 20px;
 	display: flex;
 	height: 55px;
 	flex-direction: column;
 	justify-content: space-between;
+}
+
+dialog.dark .details {
+	border: 2px solid #fff;
+}
+
+form.dark .members-title > span {
+	color: #fff;
+}
+
+form.dark .members-container {
+	border: 2px solid #fff;
+}
+
+dialog.dark .details > div > div,
+dialog.dark .details > div > span {
+	color: #fff;
 }
 
 .details img {
@@ -79,6 +105,9 @@ dialog {
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
+}
+dialog.dark .check > div {
+	color: #fff;
 }
 .edit-btn {
 	transform: scale(0.4);

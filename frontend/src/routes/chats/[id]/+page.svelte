@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import type { ChatRoom, Message, MessageDate, User } from '$lib/interfaces.ts';
 	import { FetchConfig } from '$lib/interfaces.ts';
+	import { store } from '../../../stores.ts';
 
 	const id: string = $page.params.id;
 	let currentRoom: ChatRoom = {};
@@ -64,16 +65,18 @@
 		if (!result || !result.profilepicture) return '';
 		return result.profilepicture;
 	}
+
+	$: darkMode = !$store.LightMode;
 </script>
 
 <svelte:head>
 	<title>{currentRoom.title}</title>
 </svelte:head>
 
-<div class="container">
+<div class="container" class:dark={!!darkMode}>
 	<div>
 		<div class="room-title">
-			<span class="room-title">{currentRoom.title}</span>
+			<span>{currentRoom.title}</span>
 		</div>
 		<div class="msg-container">
 			{#each messages as message (message.id)}

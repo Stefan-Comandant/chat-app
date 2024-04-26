@@ -2,19 +2,22 @@
 	import { onMount } from 'svelte';
 	import type { User } from '$lib/interfaces.ts';
 	import { page } from '$app/stores';
+	import { store } from '../../stores.ts';
 
 	let profiles: User[] = [];
 
 	onMount(() => {
 		profiles = $page.data.profiles;
 	});
+
+	$: darkMode = !$store.LightMode;
 </script>
 
-<h1>Other Users</h1>
+<h1 class:dark={!!darkMode}>Other Users</h1>
 <div>
 	{#each profiles as profile (profile.id)}
 		<div>
-			<a class="account" href="/profiles/{profile.id}">
+			<a class="account" href="/profiles/{profile.id}" class:dark={!!darkMode}>
 				<img src={profile.profilepicture} alt="Pfp" />
 				<div>
 					<div>{profile.username}</div>

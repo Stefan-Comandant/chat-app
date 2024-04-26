@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { User, HTTPResponse } from '$lib/interfaces.ts';
-	import { Register } from '$lib/authentication.ts';
 	import { createEventDispatcher } from 'svelte';
+	import { store } from '../../../stores.ts';
 
 	const dispatch = createEventDispatcher();
 
@@ -12,6 +12,7 @@
 	};
 
 	export let response: HTTPResponse = {};
+	$: darkMode = !$store.LightMode;
 
 	let fileInput: any;
 
@@ -20,6 +21,7 @@
 </script>
 
 <form
+	class:dark={darkMode}
 	on:submit|preventDefault={() => {
 		dispatch('register', info);
 	}}
@@ -53,7 +55,7 @@
 		{/if}
 	</div>
 	<div>
-		<input type="text" placeholder="Enter your email" bind:value={info.email} />
+		<input type="email" placeholder="Enter your email" bind:value={info.email} />
 	</div>
 	<div>
 		<input type="text" placeholder="Enter your password" bind:value={info.password} />

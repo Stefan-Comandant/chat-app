@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { store } from '../../stores.ts';
+
 	export let page: any = {};
-	const darkMode = true;
+	$: darkMode = !$store.LightMode;
 
 	const options = [
 		{
@@ -31,9 +33,9 @@
 </script>
 
 {#if Object.keys(page.data.USER).length}
-	<nav class:dark={darkMode}>
+	<nav class:dark={!!darkMode}>
 		{#each options as option}
-			<a class:dark={darkMode} href={option.route} class:active={page.route.id === option.route}
+			<a class:dark={!!darkMode} href={option.route} class:active={page.route.id === option.route}
 				>{option.text}</a
 			>
 		{/each}

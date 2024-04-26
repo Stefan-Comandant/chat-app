@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { User, HTTPResponse } from '$lib/interfaces.ts';
 	import { createEventDispatcher } from 'svelte';
+	import { store } from '../../../stores.ts';
 
 	const dispatch = createEventDispatcher();
 
@@ -8,11 +9,13 @@
 		email: '',
 		password: ''
 	};
+	$: darkMode = !$store.LightMode;
 
 	export let response: HTTPResponse;
 </script>
 
 <form
+	class:dark={!!darkMode}
 	on:submit|preventDefault={async () => {
 		dispatch('login', info);
 	}}
