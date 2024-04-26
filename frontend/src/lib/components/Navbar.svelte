@@ -6,8 +6,8 @@
 
 	const options = [
 		{
-			route: '/',
-			text: 'Home'
+			route: '/chats',
+			text: 'Chats'
 		},
 		{
 			route: '/login',
@@ -16,10 +16,6 @@
 		{
 			route: '/register',
 			text: 'Register'
-		},
-		{
-			route: '/chats',
-			text: 'Chats'
 		},
 		{
 			route: '/profiles',
