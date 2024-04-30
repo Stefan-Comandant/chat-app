@@ -1,24 +1,25 @@
 <script lang="ts">
 	import type { Setting } from '$lib/interfaces.ts';
 	import { onMount } from 'svelte';
-	import { store } from '../../stores.ts';
+	import { loading, settings } from '../../stores.ts';
 
-	let settings: Setting;
+	let setting: Setting;
 
 	function UpdateSetting(setting: Setting) {
 		localStorage.setItem('settings', JSON.stringify(setting));
 
-		store.update(() => setting);
+		settings.update(() => setting);
 	}
 
 	onMount(() => {
-		settings = JSON.parse(String(localStorage.getItem('settings')));
+		setting = JSON.parse(String(localStorage.getItem('settings')));
 		if (!settings)
-			settings = {
+			setting = {
 				LightMode: false
 			};
-		store.set(settings);
-		colorTheme = settings.LightMode ? 'light' : 'dark';
+		settings.set(setting);
+		colorTheme = setting.LightMode ? 'light' : 'dark';
+		$loading.goPast = true;
 	});
 
 	let colorTheme = 'dark';
@@ -30,8 +31,8 @@
 		id="color-theme"
 		bind:value={colorTheme}
 		on:change={() => {
-			settings.LightMode = colorTheme === 'light';
-			UpdateSetting(settings);
+			setting.LightMode = colorTheme === 'light';
+			UpdateSetting(setting);
 		}}
 	>
 		<option value="dark">Dark Mode</option>

@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { User } from '$lib/interfaces.ts';
+	import { loading } from '../../../stores.ts';
 
 	let profile: User = {
 		id: '',
@@ -15,6 +16,7 @@
 
 	onMount(async () => {
 		profile = $page.data.profile;
+		$loading.goPast = true;
 	});
 </script>
 

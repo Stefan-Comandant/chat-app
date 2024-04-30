@@ -5,4 +5,5 @@ const value: Setting = {
 	LightMode: false
 };
 
-export const store = writable(value);
+export const settings = writable(value);
+export const loading = writable({ goPast: false, loading: false });

@@ -2,15 +2,16 @@
 	import { onMount } from 'svelte';
 	import type { User } from '$lib/interfaces.ts';
 	import { page } from '$app/stores';
-	import { store } from '../../stores.ts';
+	import { loading, settings } from '../../stores.ts';
 
 	let profiles: User[] = [];
 
 	onMount(() => {
 		profiles = $page.data.profiles;
+		$loading.goPast = true;
 	});
 
-	$: darkMode = !$store.LightMode;
+	$: darkMode = !$settings.LightMode;
 </script>
 
 <h1 class:dark={!!darkMode}>Other Users</h1>

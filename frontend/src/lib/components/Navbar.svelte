@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { store } from '../../stores.ts';
+	import { settings, loading } from '../../stores.ts';
 
 	export let page: any = {};
-	$: darkMode = !$store.LightMode;
+	$: darkMode = !$settings.LightMode;
 
 	const options = [
 		{
@@ -26,6 +26,22 @@
 			text: 'Settings'
 		}
 	];
+
+	let multiplier = 0;
+	loading.subscribe((value) => {
+		if (value.loading) {
+			const interval = setInterval(() => {
+				if (multiplier !== 6 || value.goPast) multiplier++;
+
+				if (multiplier == 10) {
+					clearInterval(interval);
+					multiplier = 0;
+					$loading.goPast = false;
+					$loading.loading = false;
+				}
+			}, 400);
+		}
+	});
 </script>
 
 {#if Object.keys(page.data.USER).length}
@@ -37,6 +53,11 @@
 		{/each}
 		<img src={page.data.USER.profilepicture} alt="Pfp" />
 	</nav>
+{/if}
+{#if $loading.loading}
+	<div class="bar">
+		<div class="line" style="width: {10 * multiplier}%" />
+	</div>
 {/if}
 
 <style>
@@ -86,5 +107,18 @@
 
 	.active.dark {
 		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.bar {
+		width: 100%;
+		height: 4px;
+	}
+
+	.line {
+		width: 0;
+		max-width: 100%;
+		height: 4px;
+		background: red;
+		transition: all 800ms;
 	}
 </style>

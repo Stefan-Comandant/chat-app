@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { loading } from '../../../stores.ts';
 
 	let response: HTTPResponse = {
 		response: ''
@@ -13,6 +14,7 @@
 
 	onMount(() => {
 		verification.userid = $page.params.id;
+		$loading.goPast = true;
 	});
 </script>
 

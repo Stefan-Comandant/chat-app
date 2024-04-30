@@ -123,3 +123,7 @@ dialog.dark .check > div {
 	justify-content: center;
 	height: 40px;
 }
+
+form.dark .member > span {
+	color: #fff;
+}

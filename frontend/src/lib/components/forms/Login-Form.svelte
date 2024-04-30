@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { User, HTTPResponse } from '$lib/interfaces.ts';
-	import { createEventDispatcher } from 'svelte';
-	import { store } from '../../../stores.ts';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import { loading, settings } from '../../../stores.ts';
 
 	const dispatch = createEventDispatcher();
 
@@ -9,8 +9,10 @@
 		email: '',
 		password: ''
 	};
-	$: darkMode = !$store.LightMode;
-
+	$: darkMode = !$settings.LightMode;
+	onMount(() => {
+		$loading.goPast = true;
+	});
 	export let response: HTTPResponse;
 </script>
 

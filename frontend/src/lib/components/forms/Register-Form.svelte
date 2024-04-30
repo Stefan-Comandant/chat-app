@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { User, HTTPResponse } from '$lib/interfaces.ts';
-	import { createEventDispatcher } from 'svelte';
-	import { store } from '../../../stores.ts';
+	import { createEventDispatcher, onMount } from 'svelte';
+	import { loading, settings } from '../../../stores.ts';
 
 	const dispatch = createEventDispatcher();
 
@@ -12,12 +12,16 @@
 	};
 
 	export let response: HTTPResponse = {};
-	$: darkMode = !$store.LightMode;
+	$: darkMode = !$settings.LightMode;
 
 	let fileInput: any;
 
 	let showImage = false;
 	let image: HTMLImageElement;
+
+	onMount(() => {
+		$loading.goPast = true;
+	});
 </script>
 
 <form

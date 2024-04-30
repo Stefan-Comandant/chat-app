@@ -2,23 +2,24 @@
 	import { page } from '$app/stores';
 	import Navbar from '$lib/components/Navbar.svelte';
 	import { onDestroy, onMount } from 'svelte';
-	import { store } from '../stores.ts';
+	import { loading, settings } from '../stores.ts';
 	import type { Setting } from '$lib/interfaces.ts';
+	import { afterNavigate, beforeNavigate } from '$app/navigation';
 
 	let unsubscribe = () => {};
-	let settings: Setting = {
+	let setting: Setting = {
 		LightMode: true
 	};
 
 	onMount(() => {
 		const result = localStorage.getItem('settings');
 		if (result) {
-			settings = JSON.parse(String(result));
+			setting = JSON.parse(String(result));
 		}
-		if ($store !== settings) {
-			store.update(() => settings);
+		if ($settings !== setting) {
+			settings.update(() => setting);
 		}
-		unsubscribe = store.subscribe((value) => {
+		unsubscribe = settings.subscribe((value) => {
 			const backgroundColor = value.LightMode ? '#ffffff' : '#121212';
 
 			document.body.style.backgroundColor = backgroundColor;
@@ -28,6 +29,24 @@
 	onDestroy(() => {
 		unsubscribe();
 	});
+
+	beforeNavigate(() => {
+		loading.update(() => {
+			return {
+				loading: true,
+				goPast: false
+			};
+		});
+	});
+
+	// afterNavigate(() => {
+	// 	loading.update(() => {
+	// 		return {
+	// 			loading: false,
+	// 			goPast: false
+	// 		};
+	// 	});
+	// });
 </script>
 
 <header>

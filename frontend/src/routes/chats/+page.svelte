@@ -2,7 +2,7 @@
 	import { type ChatRoom, type MessageDate, type User } from '$lib/interfaces.ts';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { store } from '../../stores.ts';
+	import { loading, settings } from '../../stores.ts';
 
 	let rooms: ChatRoom[] = [];
 	let USER: User = {};
@@ -15,9 +15,10 @@
 	onMount(() => {
 		rooms = $page.data.rooms;
 		USER = $page.data.USER;
+		$loading.goPast = true;
 	});
 
-	$: darkMode = !$store.LightMode;
+	$: darkMode = !$settings.LightMode;
 
 	function formatDate(dateStr: string): MessageDate {
 		if (!dateStr) return { ofYear: '', ofDay: '' };

@@ -1,5 +1,11 @@
 <script lang="ts">
 	import ChatForm from '$lib/components/forms/Chat-Form.svelte';
+	import { onMount } from 'svelte';
+	import { loading } from '../../../stores.ts';
+
+	onMount(() => {
+		$loading.goPast = true;
+	});
 </script>
 
 <div class="container">

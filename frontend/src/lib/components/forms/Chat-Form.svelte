@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import EditButton from '../buttons/Edit-Button.svelte';
 	import { GetUsers } from '$lib/users.ts';
-	import { store } from '../../../stores.ts';
+	import { loading, settings } from '../../../stores.ts';
 	let users: User[] = [];
 	let openModal = false;
 
@@ -19,7 +19,6 @@
 	};
 
 	function AddMember(event: any, id: string = '') {
-		console.log(id);
 		if (!event || !id) return;
 
 		const target = event.target;
@@ -42,11 +41,15 @@
 		}
 	}
 
-	$: darkMode = !$store.LightMode;
+	$: darkMode = !$settings.LightMode;
 
 	let response: HTTPResponse = {
 		response: ''
 	};
+
+	onMount(() => {
+		$loading.goPast = true;
+	});
 </script>
 
 <form
@@ -108,7 +111,6 @@
 							type="checkbox"
 							on:input={(event) => {
 								AddMember(event, user.id);
-								console.log(event, user.id);
 							}}
 						/>
 					</div>
@@ -118,7 +120,6 @@
 							type="checkbox"
 							on:input={(event) => {
 								AddAdmin(event, user.id);
-								console.log(event, user.id);
 							}}
 						/>
 					</div>

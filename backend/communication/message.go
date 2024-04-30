@@ -24,7 +24,7 @@ type Message struct {
 }
 
 func AddMessage(msg Message) (Message, error) {
-	err := database.DB.Table("messages").Create(&msg).Error
+	err := database.DB.Table("messages").Clauses(clause.Returning{}).Create(&msg).Error
 	if err != nil {
 		return Message{}, err
 	}
