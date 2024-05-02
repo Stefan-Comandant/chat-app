@@ -10,33 +10,34 @@
 	let msg = '';
 	let messages: Message[] = [];
 	let socket: WebSocket;
-	let datesGroup: string[] = [];
+	let dates: Map<number, string> = new Map();
 
-	function formatDate(dateStr: string, goal: string): MessageDate {
+	// Function to get the moment of the day and of the year when the message was sent
+	function formatDate(dateStr: string): MessageDate {
 		if (!dateStr) return { ofYear: '', ofDay: '' };
+
+		// Set pointers in time
 		const date = new Date(dateStr);
-		const hour = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
-		const minute = date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes();
-		const meridian = date.getHours() > 12 ? 'PM' : 'AM';
-		const day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
-		const month = date.getMonth() > 9 ? date.getMonth() : '0' + date.getMonth();
-		const year = date.getFullYear();
-
-		const yearDate = `${day}-${month}-${year}`;
+		const todayDate = new Date();
+		const { hour, minute, meridian, day, month, year } = getDateValues(date);
 		const time = `${hour}:${minute} ${meridian}`;
-
-		if (datesGroup.indexOf(yearDate) == -1) {
-			if (goal !== 'time') datesGroup = [...datesGroup, yearDate];
-
-			return {
-				ofDay: time,
-				ofYear: yearDate
-			};
-		}
+		const today = `${getDateValues(todayDate).day}-${getDateValues(todayDate).month}-${getDateValues(todayDate).year}`;
+		const yearDate = `${day}-${month}-${year}`;
 
 		return {
-			ofYear: '',
-			ofDay: time
+			ofDay: time,
+			ofYear: today === yearDate ? 'Today' : yearDate
+		};
+	}
+
+	function getDateValues(date: Date) {
+		return {
+			minute: date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes(),
+			hour: date.getHours() > 12 ? date.getHours() - 12 : date.getHours(),
+			day: date.getDate() > 9 ? date.getDate() : '0' + date.getDate(),
+			month: date.getMonth() > 9 ? date.getMonth() : '0' + date.getMonth(),
+			year: date.getFullYear(),
+			meridian: date.getHours() > 12 ? 'PM' : 'AM'
 		};
 	}
 
@@ -53,20 +54,37 @@
 	}
 
 	$: darkMode = !$settings.LightMode;
+	let msgContainer: HTMLDivElement;
+	let showBtn = false;
 
-	onMount(async () => {
+	onMount(() => {
 		socket = new WebSocket(`ws://localhost:7000/api/socket/${id}`);
 		socket.onopen = () => {
-			socket.onmessage = (event) => {
-				messages = [...messages, JSON.parse(event.data)];
-				datesGroup = [];
+			socket.onmessage = ({ data }: { data: string }) => {
+				messages = [...messages, JSON.parse(data)];
+				computeDateDivider(JSON.parse(data), messages.length - 1);
 			};
 		};
+
 		messages = $page.data.messages;
 		currentRoomMembers = $page.data.members;
 		currentRoom = $page.data.room;
 		$loading.goPast = true;
+		msgContainer.onscroll = () => {
+			if (msgContainer.scrollTop < msgContainer.scrollHeight - msgContainer.clientHeight) {
+				showBtn = true;
+			} else showBtn = false;
+		};
+
+		messages.forEach(computeDateDivider);
 	});
+
+	function computeDateDivider(msg: Message, i: number) {
+		const formattedDate = formatDate(String(msg.sentat));
+		if (![...dates.values()].includes(String(formattedDate.ofYear))) {
+			dates.set(i, String(formattedDate.ofYear));
+		}
+	}
 </script>
 
 <svelte:head>
@@ -77,8 +95,13 @@
 	<div class="room-title">
 		<span>{currentRoom.title}</span>
 	</div>
-	<div class="msg-container">
-		{#each messages as message (message.id)}
+	<div class="msg-container" bind:this={msgContainer}>
+		{#each messages as message, index (message.id)}
+			{#if dates.get(index)}
+				<div class="date-display">
+					{dates.get(index)}
+				</div>
+			{/if}
 			<div>
 				{#if message.from != $page.data.USER.id}
 					<img
@@ -94,20 +117,17 @@
 							></span
 						>
 					{/if}
-					<div>
-						{message.text}
+					<div class:shortened={message.text.length > 1400 && !message.shortened}>
+						{message.text.length < 1400
+							? message.text
+							: message.text.split('').slice(0, 1400).join('')}
+						{#if message.text.length > 1400}
+							<button type="button" class="show-more">Show more</button>
+						{/if}
 					</div>
-					<span>{formatDate(String(message.sentat), 'time').ofDay}</span>
+					<span>{formatDate(String(message.sentat)).ofDay}</span>
 				</div>
 			</div>
-			{#if formatDate(String(message.sentat), 'time').ofYear}
-				<div
-					style="display: {messages[messages.length - 1].id === message.id ? 'none' : 'auto'}"
-					class="date-display"
-				>
-					{formatDate(String(message.sentat), 'date').ofYear}
-				</div>
-			{/if}
 		{/each}
 	</div>
 
@@ -123,6 +143,16 @@
 				msg = '';
 			}}>Send</button
 		>
+		{#if showBtn}
+			<button
+				type="button"
+				on:click={() => {
+					msgContainer.scrollTo({
+						top: msgContainer.scrollHeight
+					});
+				}}>↓</button
+			>
+		{/if}
 	</div>
 </div>
 

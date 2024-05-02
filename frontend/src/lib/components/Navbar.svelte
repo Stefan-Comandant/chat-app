@@ -27,19 +27,21 @@
 		}
 	];
 
+	let intervalMs = 200;
 	let multiplier = 0;
 	loading.subscribe((value) => {
 		if (value.loading) {
 			const interval = setInterval(() => {
 				if (multiplier !== 6 || value.goPast) multiplier++;
+				if ($loading.goPast) intervalMs = 100;
 
-				if (multiplier == 10) {
+				if (multiplier == 12) {
 					clearInterval(interval);
 					multiplier = 0;
 					$loading.goPast = false;
 					$loading.loading = false;
 				}
-			}, 400);
+			}, intervalMs);
 		}
 	});
 </script>

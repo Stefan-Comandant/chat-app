@@ -1,9 +1,3 @@
-.msg-container > div {
-	display: flex;
-	align-items: start;
-	gap: 14px;
-}
-
 .container {
 	display: flex;
 	flex-direction: column;
@@ -124,6 +118,15 @@
 	height: fit-content;
 }
 
+.shortened::after {
+	content: '...';
+}
+
+.show-more {
+	background: transparent;
+	cursor: pointer;
+}
+
 .msg-content span a {
 	color: inherit;
 	text-decoration: none;
@@ -132,13 +135,16 @@
 .msg-container {
 	display: flex;
 	flex-direction: column;
-	height: 100%;
 	gap: 1rem;
-	/* max-height: 535px; */
 	width: 100%;
 	overflow-y: scroll;
 }
 
+.msg-container > div {
+	display: flex;
+	align-items: start;
+	gap: 14px;
+}
 .msg-container::-webkit-scrollbar {
 	max-width: 2rem;
 }
