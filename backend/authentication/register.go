@@ -33,6 +33,15 @@ func Register(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if len(body.Username) == 0 || len(body.Email) == 0 || len(body.Password) == 0 {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request body"})
+		return nil
+	}
+
+	if len(body.ProfilePicture) == 0 {
+		body.ProfilePicture = ""
+	}
+
 	var mathingEmails int64
 
 	err = database.DB.Table("users").Where("email = ?", body.Email).Count(&mathingEmails).Error

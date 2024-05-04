@@ -132,6 +132,11 @@ func DeleteMessage(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if body.ID == 0 || len(body.From) == 0 || len(body.To) == 0 || len(body.Text) == 0 {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request body"})
+		return nil
+	}
+
 	userID, err := authentication.GetUserIDFromSession(ctx)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})

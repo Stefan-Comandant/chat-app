@@ -17,6 +17,11 @@ func Login(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if len(body.Email) == 0 || len(body.Password) == 0 {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request body"})
+		return nil
+	}
+
 	var matchingEmails int64
 
 	err = database.DB.Table("users").Where("email = ?", body.Email).Count(&matchingEmails).Error
