@@ -94,8 +94,11 @@ func createSession(ctx *fiber.Ctx, userID string) error {
 }
 
 func expireVerificationSession(session VerificationSession) {
-	time.Sleep(time.Second * 120)
+	ticker := time.NewTicker(time.Second * 120)
+	defer ticker.Stop()
 	var err error = nil
+
+	<-ticker.C
 	for {
 		err = database.DB.Table("verification_sessions").Where("id = ?", session.ID).Delete(&session).Error
 		if err == nil {
