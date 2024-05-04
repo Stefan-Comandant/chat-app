@@ -1,10 +1,13 @@
 <script lang="ts">
+	import { settings, loading } from '../../stores.ts';
+
 	export let page: any = {};
+	$: darkMode = !$settings.LightMode;
 
 	const options = [
 		{
-			route: '/',
-			text: 'Home'
+			route: '/chats',
+			text: 'Chats'
 		},
 		{
 			route: '/login',
@@ -15,10 +18,6 @@
 			text: 'Register'
 		},
 		{
-			route: '/chats',
-			text: 'Chats'
-		},
-		{
 			route: '/profiles',
 			text: 'Profiles'
 		},
@@ -27,15 +26,40 @@
 			text: 'Settings'
 		}
 	];
+
+	let intervalMs = 200;
+	let multiplier = 0;
+	loading.subscribe((value) => {
+		if (value.loading) {
+			const interval = setInterval(() => {
+				if (multiplier !== 6 || value.goPast) multiplier++;
+				if ($loading.goPast) intervalMs = 100;
+
+				if (multiplier == 12) {
+					clearInterval(interval);
+					multiplier = 0;
+					$loading.goPast = false;
+					$loading.loading = false;
+				}
+			}, intervalMs);
+		}
+	});
 </script>
 
 {#if Object.keys(page.data.USER).length}
-	<nav>
+	<nav class:dark={!!darkMode}>
 		{#each options as option}
-			<a href={option.route} class:active={page.route.id === option.route}>{option.text}</a>
+			<a class:dark={!!darkMode} href={option.route} class:active={page.route.id === option.route}
+				>{option.text}</a
+			>
 		{/each}
 		<img src={page.data.USER.profilepicture} alt="Pfp" />
 	</nav>
+{/if}
+{#if $loading.loading}
+	<div class="bar">
+		<div class="line" style="width: {10 * multiplier}%" />
+	</div>
 {/if}
 
 <style>
@@ -46,16 +70,25 @@
 	}
 
 	nav {
+		min-height: fit-content;
+		height: 60px;
+		width: 100%;
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
-		position: fixed;
-		left: 0;
-		right: 0;
-		height: fit-content;
-		padding: 10px 0;
-		top: 0;
 		border-bottom: 1px solid #b0b0b0;
+		overflow-x: scroll;
+		z-index: 1000;
+		background: #fff;
+	}
+
+	nav::-webkit-scrollbar {
+		display: none;
+	}
+
+	nav.dark {
+		border-bottom: 2px solid #d6d6d6;
+		background: #02042a;
 	}
 
 	nav a {
@@ -66,7 +99,28 @@
 		height: fit-content;
 	}
 
+	nav a.dark {
+		color: #fff;
+	}
+
 	.active {
 		background: #d6d6d6;
+	}
+
+	.active.dark {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.bar {
+		width: 100%;
+		height: 4px;
+	}
+
+	.line {
+		width: 0;
+		max-width: 100%;
+		height: 4px;
+		background: red;
+		transition: all 800ms;
 	}
 </style>

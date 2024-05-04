@@ -15,6 +15,7 @@ export interface Message {
 	sentat?: string;
 	from?: string;
 	to?: string;
+	shortened?: boolean;
 }
 
 export interface ChatRoom {

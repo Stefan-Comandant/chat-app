@@ -2,23 +2,21 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { User } from '$lib/interfaces.ts';
-	import { GetProfileByID } from '$lib/users.ts';
+	import { loading } from '../../../stores.ts';
 
-	let profile: User = {};
-	const id: string = $page.params.id;
+	let profile: User = {
+		id: '',
+		username: '',
+		about: '',
+		email: '',
+		password: '',
+		currency: '',
+		balance: 0
+	};
 
 	onMount(async () => {
-		profile = await GetProfileByID(id);
-		if (!profile)
-			profile = {
-				id: '',
-				username: '',
-				about: '',
-				email: '',
-				password: '',
-				currency: '',
-				balance: 0
-			};
+		profile = $page.data.profile;
+		$loading.goPast = true;
 	});
 </script>
 

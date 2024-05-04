@@ -3,10 +3,16 @@
 	import { Login } from '$lib/authentication.ts';
 	import LoginForm from '$lib/components/forms/Login-Form.svelte';
 	import type { HTTPResponse } from '$lib/interfaces.ts';
+	import { onMount } from 'svelte';
+	import { loading } from '../../stores.ts';
 
 	let response: HTTPResponse = {
 		response: ''
 	};
+
+	onMount(() => {
+		$loading.goPast = true;
+	});
 </script>
 
 <div class="container">
@@ -30,5 +36,7 @@
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
+		width: fit-content;
+		height: fit-content;
 	}
 </style>

@@ -1,20 +1,24 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { type ChatRoom, type MessageDate, type User } from '$lib/interfaces.ts';
-	import { GetChatRooms } from '$lib/chat-rooms.ts';
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+	import { loading, settings } from '../../stores.ts';
 
 	let rooms: ChatRoom[] = [];
-	let dialog: any = {};
-	let modal: any = {};
+	let USER: User = {};
+
+	let dialog: HTMLDialogElement;
+	let modal: HTMLDialogElement;
 	let selectMode = 'view';
 	let selectedRoom: ChatRoom = { admins: [], owner: '' };
 
-	onMount(async () => {
-		rooms = await GetChatRooms();
-		if (!rooms) rooms = [];
-		dialog.close();
+	onMount(() => {
+		rooms = $page.data.rooms;
+		USER = $page.data.USER;
+		$loading.goPast = true;
 	});
+
+	$: darkMode = !$settings.LightMode;
 
 	function formatDate(dateStr: string): MessageDate {
 		if (!dateStr) return { ofYear: '', ofDay: '' };
@@ -38,9 +42,10 @@
 
 <div>
 	{#each rooms as room (room.id)}
-		<div class="room-container">
+		<div class="room-container" class:dark={!!darkMode}>
 			<a
 				class="room"
+				class:dark={!!darkMode}
 				href="/chats/{room.id}"
 				on:contextmenu|preventDefault={async (event) => {
 					dialog.show();
@@ -63,10 +68,10 @@
 
 <dialog class="popup" bind:this={dialog}>
 	<div>
-		{#if $page.data.USER.id && selectedRoom.admins?.includes($page.data.USER.id)}
+		{#if USER.id && selectedRoom.admins?.includes(USER.id)}
 			<button on:click={() => modal.showModal()}>Edit Room</button>
 		{/if}
-		{#if $page.data.USER.id && selectedRoom.owner === $page.data.USER.id}
+		{#if USER.id && selectedRoom.owner === USER.id}
 			<button>Delete Room</button>
 		{/if}
 		<button>Quit Room</button>

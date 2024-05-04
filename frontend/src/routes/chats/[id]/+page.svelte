@@ -2,36 +2,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import type { ChatRoom, Message, MessageDate, User } from '$lib/interfaces.ts';
-	import { FetchConfig } from '$lib/interfaces.ts';
-	import { GetRoom, FetchMessages } from '$lib/chat-rooms.ts';
-
-	function formatDate(dateStr: string, goal: string): MessageDate {
-		if (!dateStr) return { ofYear: '', ofDay: '' };
-		const date = new Date(dateStr);
-		const hour = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
-		const minute = date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes();
-		const meridian = date.getHours() > 12 ? 'PM' : 'AM';
-		const day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
-		const month = date.getMonth() > 9 ? date.getMonth() : '0' + date.getMonth();
-		const year = date.getFullYear();
-
-		const yearDate = `${day}-${month}-${year}`;
-		const time = `${hour}:${minute} ${meridian}`;
-
-		if (datesGroup.indexOf(yearDate) == -1) {
-			if (goal !== 'time') datesGroup = [...datesGroup, yearDate];
-
-			return {
-				ofDay: time,
-				ofYear: yearDate
-			};
-		}
-
-		return {
-			ofYear: '',
-			ofDay: time
-		};
-	}
+	import { loading, settings } from '../../../stores.ts';
 
 	const id: string = $page.params.id;
 	let currentRoom: ChatRoom = {};
@@ -39,26 +10,36 @@
 	let msg = '';
 	let messages: Message[] = [];
 	let socket: WebSocket;
-	let datesGroup: string[] = [];
-	let displayContent = false;
+	let dates: Map<number, string> = new Map();
 
-	onMount(async () => {
-		socket = new WebSocket(`ws://localhost:7000/api/socket/${id}`);
-		socket.onopen = () => {
-			socket.onmessage = (event) => {
-				messages = [...messages, JSON.parse(event.data)];
-				datesGroup = [];
-			};
+	// Function to get the moment of the day and of the year when the message was sent
+	function formatDate(dateStr: string): MessageDate {
+		if (!dateStr) return { ofYear: '', ofDay: '' };
+
+		// Set pointers in time
+		const date = new Date(dateStr);
+		const todayDate = new Date();
+		const { hour, minute, meridian, day, month, year } = getDateValues(date);
+		const time = `${hour}:${minute} ${meridian}`;
+		const today = `${getDateValues(todayDate).day}-${getDateValues(todayDate).month}-${getDateValues(todayDate).year}`;
+		const yearDate = `${day}-${month}-${year}`;
+
+		return {
+			ofDay: time,
+			ofYear: today === yearDate ? 'Today' : yearDate
 		};
-		currentRoom = await GetRoom(id);
-		messages = await FetchMessages(currentRoom.messages);
-		if (!messages) messages = [];
+	}
 
-		currentRoomMembers = await GetRoomMembers();
-		if (!currentRoomMembers) currentRoomMembers = [];
-
-		displayContent = true;
-	});
+	function getDateValues(date: Date) {
+		return {
+			minute: date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes(),
+			hour: date.getHours() > 12 ? date.getHours() - 12 : date.getHours(),
+			day: date.getDate() > 9 ? date.getDate() : '0' + date.getDate(),
+			month: date.getMonth() > 9 ? date.getMonth() : '0' + date.getMonth(),
+			year: date.getFullYear(),
+			meridian: date.getHours() > 12 ? 'PM' : 'AM'
+		};
+	}
 
 	function GetUsername(from: string = '', members: User[] = []): string {
 		const member = members.filter((member) => member.id === from)[0];
@@ -66,17 +47,47 @@
 		return member.username;
 	}
 
-	async function GetRoomMembers(): Promise<User[]> {
-		const response = await fetch(`/api/rooms/${id}/members`, FetchConfig);
-		const data = await response.json();
-
-		return data.response;
-	}
-
 	function getProfilePicture(id: string = '', members: User[] = []): string {
 		const result = members.filter((member) => member.id === id)[0];
 		if (!result || !result.profilepicture) return '';
 		return result.profilepicture;
+	}
+
+	$: darkMode = !$settings.LightMode;
+	let msgContainer: HTMLDivElement;
+	let showBtn = false;
+
+	onMount(() => {
+		socket = new WebSocket(`ws://localhost:7000/api/socket/${id}`);
+		socket.onopen = () => {
+			socket.onmessage = ({ data }: { data: string }) => {
+				messages = [...messages, JSON.parse(data)];
+				computeDateDivider(JSON.parse(data), messages.length - 1);
+			};
+		};
+
+		messages = $page.data.messages;
+		currentRoomMembers = $page.data.members;
+		currentRoom = $page.data.room;
+		$loading.goPast = true;
+		msgContainer.onscroll = () => {
+			if (msgContainer.scrollTop < msgContainer.scrollHeight - msgContainer.clientHeight) {
+				showBtn = true;
+			} else showBtn = false;
+		};
+
+		messages = messages.map(computeDateDivider);
+	});
+
+	function computeDateDivider(msg: Message, i: number) {
+		const formattedDate = formatDate(String(msg.sentat));
+		if (![...dates.values()].includes(String(formattedDate.ofYear))) {
+			dates.set(i, String(formattedDate.ofYear));
+		}
+
+		msg.shortened = msg.text.length > 1400;
+
+		return msg;
 	}
 </script>
 
@@ -84,63 +95,70 @@
 	<title>{currentRoom.title}</title>
 </svelte:head>
 
-{#if displayContent}
-	<div class="container">
-		<div>
-			<div class="room-title">
-				<span class="room-title">{currentRoom.title}</span>
-			</div>
-			<div class="msg-container">
-				{#each messages as message (message.id)}
-					<div>
-						{#if message.from != $page.data.USER.id}
-							<img
-								class="msg-profile-picture"
-								alt="pfp"
-								src={getProfilePicture(message.from, currentRoomMembers)}
-							/>
-						{/if}
-						<div class="msg-content" class:sent-by-me={$page.data.USER.id === message.from}>
-							{#if message.from !== $page.data.USER.id}
-								<span
-									><a href="/profiles/{message.from}"
-										>{GetUsername(message.from, currentRoomMembers)}</a
-									></span
-								>
-							{/if}
-							<div>
-								{message.text}
-							</div>
-							<span>{formatDate(String(message.sentat), 'time').ofDay}</span>
-						</div>
-					</div>
-					{#if formatDate(String(message.sentat), 'time').ofYear}
-						<div
-							style="display: {messages[messages.length - 1].id === message.id ? 'none' : 'auto'}"
-							class="date-display"
+<div class="container" class:dark={!!darkMode}>
+	<div class="room-title">
+		<span>{currentRoom.title}</span>
+	</div>
+	<div class="msg-container" bind:this={msgContainer}>
+		{#each messages as message, index (message.id)}
+			{#if dates.get(index)}
+				<div class="date-display">
+					{dates.get(index)}
+				</div>
+			{/if}
+			<div>
+				{#if message.from != $page.data.USER.id}
+					<img
+						class="msg-profile-picture"
+						alt="pfp"
+						src={getProfilePicture(message.from, currentRoomMembers)}
+					/>
+				{/if}
+				<div class="msg-content" class:sent-by-me={$page.data.USER.id === message.from}>
+					{#if message.from !== $page.data.USER.id}
+						<span
+							><a href="/profiles/{message.from}">{GetUsername(message.from, currentRoomMembers)}</a
+							></span
 						>
-							{formatDate(String(message.sentat), 'date').ofYear}
-						</div>
 					{/if}
-				{/each}
+					<div class={message.shortened ? 'shortened' : ''}>
+						{message.shortened ? message.text.split('').slice(0, 1400).join('') : message.text}
+						{#if message.shortened}
+							<button type="button" class="show-more" on:click={() => (message.shortened = false)}
+								>Show more</button
+							>
+						{/if}
+					</div>
+					<span>{formatDate(String(message.sentat)).ofDay}</span>
+				</div>
 			</div>
-		</div>
+		{/each}
+	</div>
 
-		<div class="msg-input">
-			<textarea bind:value={msg} />
+	<div class="msg-input">
+		<textarea bind:value={msg} />
+		<button
+			type="button"
+			on:click={() => {
+				if (!msg.length) return;
+				const data = JSON.stringify({ text: msg, toid: parseInt(id) });
+				socket.send(data);
+
+				msg = '';
+			}}>Send</button
+		>
+		{#if showBtn}
 			<button
 				type="button"
 				on:click={() => {
-					if (!msg.length) return;
-					const data = JSON.stringify({ text: msg, toid: parseInt(id) });
-					socket.send(data);
-
-					msg = '';
-				}}>Send</button
+					msgContainer.scrollTo({
+						top: msgContainer.scrollHeight
+					});
+				}}>↓</button
 			>
-		</div>
+		{/if}
 	</div>
-{/if}
+</div>
 
 <style>
 	@import '../../../lib/css/chat.css';

@@ -24,7 +24,7 @@ type Message struct {
 }
 
 func AddMessage(msg Message) (Message, error) {
-	err := database.DB.Table("messages").Create(&msg).Error
+	err := database.DB.Table("messages").Clauses(clause.Returning{}).Create(&msg).Error
 	if err != nil {
 		return Message{}, err
 	}
@@ -56,14 +56,16 @@ func GetMessages(ctx *fiber.Ctx) error {
 	}
 
 	var response []Message
-	var body []int64
-	err = ctx.BodyParser(&body)
+	var room ChatRoom
+	var id = ctx.Params("id")
+
+	err = database.DB.Table("chat_rooms").Where("id = ?", id).First(&room).Error
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
-	err = database.DB.Table("messages").Where("id IN ?", body).Find(&response).Error
+	err = database.DB.Table("messages").Where("id = ANY(?)", room.Messages).Find(&response).Error
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err

@@ -7,7 +7,7 @@ import (
 )
 
 type VerificationSession struct {
-	ID     string `json:"id" gorm:"primaryKey"`
+	ID     int    `json:"id" gorm:"primaryKey;autoIncrement"`
 	Code   string `json:"code" gorm:"NOT NULL"`
 	UserID string `json:"userid" gorm:"NOT NULL"`
 }

@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import EditButton from '../buttons/Edit-Button.svelte';
 	import { GetUsers } from '$lib/users.ts';
+	import { loading, settings } from '../../../stores.ts';
 	let users: User[] = [];
 	let openModal = false;
 
@@ -13,13 +14,12 @@
 	});
 
 	let info: ChatRoom = {
-		title: '',
 		members: [],
 		admins: []
 	};
 
 	function AddMember(event: any, id: string = '') {
-		if (!event || !info.members?.length) return;
+		if (!event || !id) return;
 
 		const target = event.target;
 
@@ -31,7 +31,7 @@
 	}
 
 	function AddAdmin(event: any, id: string = '') {
-		if (!event || !info.admins?.length) return;
+		if (!event || !id) return;
 		const target = event.target;
 
 		if (target.checked === true) {
@@ -41,12 +41,19 @@
 		}
 	}
 
+	$: darkMode = !$settings.LightMode;
+
 	let response: HTTPResponse = {
 		response: ''
 	};
+
+	onMount(() => {
+		$loading.goPast = true;
+	});
 </script>
 
 <form
+	class:dark={!!darkMode}
 	on:submit|preventDefault={async () => {
 		if (!info.title?.length) return;
 
@@ -63,11 +70,11 @@
 		<div class="members-title">
 			<span>Members</span>
 			<button class="edit-btn" type="button" on:click={() => (openModal = !openModal)}
-				><EditButton /></button
+				><EditButton stroke={darkMode ? '#ffffff' : '#000000'} /></button
 			>
 		</div>
 		<div class="members-container">
-			{#each info.members || [] as member (member)}
+			{#each info.members as member (member)}
 				<div class="member">
 					<img
 						class="profile-picture"
@@ -85,7 +92,7 @@
 	>
 </form>
 
-<dialog open={openModal}>
+<dialog open={openModal} class:dark={!!darkMode}>
 	<div>
 		{#each users as user (user.id)}
 			<div class="account">
@@ -100,11 +107,21 @@
 				<div class="checks">
 					<div class="check">
 						<div>Member</div>
-						<input type="checkbox" on:input={(event) => AddMember(event, user.id || '')} />
+						<input
+							type="checkbox"
+							on:input={(event) => {
+								AddMember(event, user.id);
+							}}
+						/>
 					</div>
 					<div class="check">
 						<div>Admin</div>
-						<input type="checkbox" on:input={(event) => AddAdmin(event, user.id || '')} />
+						<input
+							type="checkbox"
+							on:input={(event) => {
+								AddAdmin(event, user.id);
+							}}
+						/>
 					</div>
 				</div>
 			</div>
