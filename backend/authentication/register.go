@@ -70,38 +70,18 @@ func Register(ctx *fiber.Ctx) error {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
-
 	var fileType string
 
-	switch string([]byte(body.ProfilePicture)[:15]) {
-	case "data:image/png;":
-		fileType = "png"
-	case "data:image/jpg;":
-		fileType = "jpg"
-	case "data:image/jpeg":
-		fileType = "jpeg"
+	if len(body.ProfilePicture) > 0 {
+
+		fileType, err = storeProfilePicture(body, code)
+		if err != nil {
+			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+			return err
+		}
+
+		body.ProfilePicture = fmt.Sprintf("%v;%v", fileType, code)
 	}
-
-	fileName := fmt.Sprintf("../profiles/%v.%v", code, fileType)
-
-	left, right := 22, 4
-
-	if fileType == "jpeg" {
-		left = 23
-	}
-
-	fileContent, err := base64.StdEncoding.DecodeString(string([]byte(body.ProfilePicture)[left : len(body.ProfilePicture)-right]))
-	if err != nil {
-		panic(err)
-	}
-
-	err = os.WriteFile(fileName, fileContent, 0755)
-	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-		return err
-	}
-
-	body.ProfilePicture = fmt.Sprintf("%v;%v", fileType, code)
 	body.ID = uuid.NewString()
 
 	err = database.DB.Clauses(clause.Returning{}).Table("users").Create(&body).Error
@@ -134,4 +114,32 @@ func Register(ctx *fiber.Ctx) error {
 	go expireVerificationSession(session)
 
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully registerd account!", "id": body.ID})
+}
+
+func storeProfilePicture(body User, code string) (string, error) {
+	var fileType string
+
+	switch string([]byte(body.ProfilePicture)[:15]) {
+	case "data:image/png;":
+		fileType = "png"
+	case "data:image/jpg;":
+		fileType = "jpg"
+	case "data:image/jpeg":
+		fileType = "jpeg"
+	}
+
+	fileName := fmt.Sprintf("../profiles/%v.%v", code, fileType)
+
+	left, right := 22, 4
+
+	if fileType == "jpeg" {
+		left = 23
+	}
+
+	fileContent, err := base64.StdEncoding.DecodeString(string([]byte(body.ProfilePicture)[left : len(body.ProfilePicture)-right]))
+	if err != nil {
+		return fileType, err
+	}
+
+	return fileType, os.WriteFile(fileName, fileContent, 0755)
 }
