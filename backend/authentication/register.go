@@ -110,12 +110,19 @@ func Register(ctx *fiber.Ctx) error {
 	// Send email with verification code
 	emailBody := fmt.Sprintf("<h1>%v</h1>", code)
 
+	var session = VerificationSession{
+		Code:   code,
+		UserID: body.ID,
+	}
+
 	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
-	err = database.DB.Table("verification_sessions").Create(&VerificationSession{Code: code, UserID: body.ID}).Error
+	err = database.DB.Clauses(clause.Returning{}).Table("verification_sessions").Create(&session).Error
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
+
+	go expireVerificationSession(session)
 
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully registerd account!", "id": body.ID})
 }

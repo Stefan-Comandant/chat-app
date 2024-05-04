@@ -13,7 +13,6 @@ type VerificationSession struct {
 }
 
 func VerifyEmailCode(ctx *fiber.Ctx) error {
-	// Code sent from the user
 	var body VerificationSession
 
 	err := ctx.BodyParser(&body)
@@ -35,20 +34,23 @@ func VerifyEmailCode(ctx *fiber.Ctx) error {
 		return nil
 	}
 
-	var matchingSessions int64
+	var matchingSessions int64 = 0
 
 	err = database.DB.Table("verification_sessions").Where("user_id = ? AND code = ?", body.UserID, body.Code).Count(&matchingSessions).Error
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+		ctx.Status(fiber.StatusNotFound).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
-	if matchingSessions == 1 {
-		err = database.DB.Table("verification_sessions").Where("user_id = ? AND code = ?", body.UserID, body.Code).Delete(&VerificationSession{}).Error
-		if err != nil {
-			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-			return err
-		}
+	if matchingSessions == 0 {
+		ctx.Status(fiber.StatusNotFound).JSON(&fiber.Map{"status": "error", "response": "Verification session expired"})
+		return nil
+	}
+
+	err = database.DB.Table("verification_sessions").Where("user_id = ? AND code = ?", body.UserID, body.Code).Delete(&VerificationSession{}).Error
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+		return err
 	}
 
 	err = database.DB.Table("users").Where("id = ?", body.UserID).Select("email_verified").Updates(&User{EmailVerified: true}).Error
