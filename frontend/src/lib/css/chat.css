@@ -125,6 +125,12 @@
 .show-more {
 	background: transparent;
 	cursor: pointer;
+	color: #c1dafd;
+	border: none;
+}
+
+.show-more:hover {
+	text-decoration: underline;
 }
 
 .msg-content span a {

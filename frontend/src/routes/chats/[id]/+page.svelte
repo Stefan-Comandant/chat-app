@@ -76,7 +76,7 @@
 			} else showBtn = false;
 		};
 
-		messages.forEach(computeDateDivider);
+		messages = messages.map(computeDateDivider);
 	});
 
 	function computeDateDivider(msg: Message, i: number) {
@@ -84,6 +84,10 @@
 		if (![...dates.values()].includes(String(formattedDate.ofYear))) {
 			dates.set(i, String(formattedDate.ofYear));
 		}
+
+		msg.shortened = msg.text.length > 1400;
+
+		return msg;
 	}
 </script>
 
@@ -117,12 +121,12 @@
 							></span
 						>
 					{/if}
-					<div class:shortened={message.text.length > 1400 && !message.shortened}>
-						{message.text.length < 1400
-							? message.text
-							: message.text.split('').slice(0, 1400).join('')}
-						{#if message.text.length > 1400}
-							<button type="button" class="show-more">Show more</button>
+					<div class={message.shortened ? 'shortened' : ''}>
+						{message.shortened ? message.text.split('').slice(0, 1400).join('') : message.text}
+						{#if message.shortened}
+							<button type="button" class="show-more" on:click={() => (message.shortened = false)}
+								>Show more</button
+							>
 						{/if}
 					</div>
 					<span>{formatDate(String(message.sentat)).ofDay}</span>
