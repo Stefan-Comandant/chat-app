@@ -125,19 +125,25 @@ func GetUserData(ctx *fiber.Ctx) error {
 
 func getProfilePictureEncoding(user authentication.User) (string, error) {
 	var fileType string
-	code := string([]byte(user.ProfilePicture)[4:])
+	var code string
+	var path string
+	if len(user.ProfilePicture) != 0 {
+		code = string([]byte(user.ProfilePicture)[4:])
 
-	switch string([]byte(user.ProfilePicture)[:4]) {
-	case "png;":
+		switch string([]byte(user.ProfilePicture)[:4]) {
+		case "png;":
+			fileType = "png"
+		case "jpg;":
+			fileType = "jpg"
+		case "jpeg":
+			fileType = "jpeg"
+			code = string([]byte(user.ProfilePicture)[5:])
+		}
+		path = fmt.Sprintf("../profiles/%v.%v", code, fileType)
+	} else {
 		fileType = "png"
-	case "jpg;":
-		fileType = "jpg"
-	case "jpeg":
-		fileType = "jpeg"
-		code = string([]byte(user.ProfilePicture)[5:])
+		path = "../profiles/default.png"
 	}
-
-	path := fmt.Sprintf("../profiles/%v.%v", code, fileType)
 
 	content, err := os.ReadFile(path)
 	if err != nil {

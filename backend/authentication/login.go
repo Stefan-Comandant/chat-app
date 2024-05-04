@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm/clause"
 )
 
 func Login(ctx *fiber.Ctx) error {
@@ -14,6 +15,11 @@ func Login(ctx *fiber.Ctx) error {
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
+	}
+
+	if len(body.Email) == 0 || len(body.Password) == 0 {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request body"})
+		return nil
 	}
 
 	var matchingEmails int64
@@ -45,12 +51,19 @@ func Login(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	var session = VerificationSession{
+		Code:   code,
+		UserID: user.ID,
+	}
+
 	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
-	err = database.DB.Table("verification_sessions").Create(&VerificationSession{Code: code, UserID: user.ID}).Error
+	err = database.DB.Clauses(clause.Returning{}).Table("verification_sessions").Create(&session).Error
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
+
+	go expireVerificationSession(session)
 
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully logged in account!", "id": user.ID})
 }
@@ -83,4 +96,18 @@ func createSession(ctx *fiber.Ctx, userID string) error {
 	})
 
 	return err
+}
+
+func expireVerificationSession(session VerificationSession) {
+	ticker := time.NewTicker(time.Second * 120)
+	defer ticker.Stop()
+	var err error = nil
+
+	<-ticker.C
+	for {
+		err = database.DB.Table("verification_sessions").Where("id = ?", session.ID).Delete(&session).Error
+		if err == nil {
+			break
+		}
+	}
 }

@@ -33,6 +33,15 @@ func Register(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if len(body.Username) == 0 || len(body.Email) == 0 || len(body.Password) == 0 {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request body"})
+		return nil
+	}
+
+	if len(body.ProfilePicture) == 0 {
+		body.ProfilePicture = ""
+	}
+
 	var mathingEmails int64
 
 	err = database.DB.Table("users").Where("email = ?", body.Email).Count(&mathingEmails).Error
@@ -61,7 +70,53 @@ func Register(ctx *fiber.Ctx) error {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
+	var fileType string
 
+	if len(body.ProfilePicture) > 0 {
+
+		fileType, err = storeProfilePicture(body, code)
+		if err != nil {
+			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+			return err
+		}
+
+		body.ProfilePicture = fmt.Sprintf("%v;%v", fileType, code)
+	}
+	body.ID = uuid.NewString()
+
+	err = database.DB.Clauses(clause.Returning{}).Table("users").Create(&body).Error
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+		return err
+	}
+
+	code, err = GenerateSessionId(6)
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+		return err
+	}
+
+	// Send email with verification code
+	emailBody := fmt.Sprintf("<h1>%v</h1>", code)
+
+	var session = VerificationSession{
+		Code:   code,
+		UserID: body.ID,
+	}
+
+	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
+	err = database.DB.Clauses(clause.Returning{}).Table("verification_sessions").Create(&session).Error
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+		return err
+	}
+
+	go expireVerificationSession(session)
+
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully registerd account!", "id": body.ID})
+}
+
+func storeProfilePicture(body User, code string) (string, error) {
 	var fileType string
 
 	switch string([]byte(body.ProfilePicture)[:15]) {
@@ -83,39 +138,8 @@ func Register(ctx *fiber.Ctx) error {
 
 	fileContent, err := base64.StdEncoding.DecodeString(string([]byte(body.ProfilePicture)[left : len(body.ProfilePicture)-right]))
 	if err != nil {
-		panic(err)
+		return fileType, err
 	}
 
-	err = os.WriteFile(fileName, fileContent, 0755)
-	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-		return err
-	}
-
-	body.ProfilePicture = fmt.Sprintf("%v;%v", fileType, code)
-	body.ID = uuid.NewString()
-
-	err = database.DB.Clauses(clause.Returning{}).Table("users").Create(&body).Error
-	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-		return err
-	}
-
-	code, err = GenerateSessionId(6)
-	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-		return err
-	}
-
-	// Send email with verification code
-	emailBody := fmt.Sprintf("<h1>%v</h1>", code)
-
-	SendGoMail("stefancomandant@gmail.com", body.Email, "", emailBody)
-	err = database.DB.Table("verification_sessions").Create(&VerificationSession{Code: code, UserID: body.ID}).Error
-	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-		return err
-	}
-
-	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully registerd account!", "id": body.ID})
+	return fileType, os.WriteFile(fileName, fileContent, 0755)
 }

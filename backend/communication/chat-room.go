@@ -78,6 +78,11 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if len(body.Title) == 0 {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request body"})
+		return nil
+	}
+
 	userID, err := authentication.GetUserIDFromSession(ctx)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
@@ -111,6 +116,11 @@ func EditChatRoom(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if len(body.ID) == 0 || len(body.Owner) == 0 || len(body.Members) == 0 || len(body.Title) == 0 {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request body"})
+		return nil
+	}
+
 	userID, err := authentication.GetUserIDFromSession(ctx)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
@@ -137,6 +147,11 @@ func DeleteChatRoom(ctx *fiber.Ctx) error {
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
+	}
+
+	if len(body.ID) == 0 || len(body.Title) == 0 || len(body.Members) == 0 || len(body.Owner) == 0 {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request body"})
+		return nil
 	}
 
 	userID, err := authentication.GetUserIDFromSession(ctx)
