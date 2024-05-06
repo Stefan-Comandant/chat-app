@@ -60,12 +60,12 @@ func main() {
 	api.Post("/code", authentication.VerifyEmailCode)
 
 	// Rooms
-	api.Get("/rooms", communication.GetChatRooms)
-	api.Get("/rooms/:id", communication.GetChatRoomByID)
-	api.Get("/rooms/:id/members", communication.GetChatRoomMembers)
-	api.Get("/rooms/:id/messages", communication.GetMessages)
-	api.Patch("/rooms/:id", communication.EditChatRoom)
-	api.Delete("/rooms/:id", communication.DeleteChatRoom)
+	api.Get("/rooms/:type", communication.GetChatRooms)
+	api.Get("/rooms/:id/:type", communication.GetChatRoomByID)
+	api.Get("/room/:id/members", communication.GetChatRoomMembers)
+	api.Get("/room/:id/:type/messages", communication.GetMessages)
+	api.Patch("/room/:id", communication.EditChatRoom)
+	api.Delete("/room/:id", communication.DeleteChatRoom)
 	api.Post("/rooms", communication.CreateChatRoom)
 
 	// Users

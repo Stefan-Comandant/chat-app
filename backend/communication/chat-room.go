@@ -1,6 +1,8 @@
 package communication
 
 import (
+	"log"
+	"slices"
 	"time"
 
 	"go-chat-app/authentication"
@@ -24,15 +26,60 @@ type ChatRoom struct {
 }
 
 func GetChatRooms(ctx *fiber.Ctx) error {
+	var conversationType = ctx.Params("type")
+	if conversationType == "" {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid URL"})
+		return nil
+	}
+
 	userID, err := authentication.GetUserIDFromSession(ctx)
 	if err != nil {
-		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-		return err
+		return ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 	}
 
 	if userID == "" {
-		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
-		return nil
+		return ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
+	}
+
+	if conversationType == "direct" {
+		//TODO: add a way to make the websocket conn work
+		var IDs []string
+		var stuff []string
+		err = database.DB.Table("messages").Select(`"from"`, `"to"`).Where(`"from" = ? OR "to" = ?`, userID, userID).Find(&stuff).Error
+		if err != nil {
+			log.Println(err)
+		}
+
+		for _, id := range stuff {
+			if !slices.Contains(IDs, id) {
+				IDs = append(IDs, id)
+			}
+		}
+
+		var response []authentication.User
+
+		if len(IDs) == 0 {
+			return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
+		}
+
+		err = database.DB.Table("users").Where("id IN ?", IDs).Find(&response).Error
+		if err != nil {
+			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+			return err
+		}
+
+		for i, user := range response {
+			encoding, err := getProfilePictureEncoding(user)
+			if err != nil {
+				ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+				return err
+			}
+
+			response[i].ProfilePicture = encoding
+		}
+
+		return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
+
 	}
 
 	var response []ChatRoom
@@ -81,6 +128,10 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 	if len(body.Title) == 0 {
 		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request body"})
 		return nil
+	}
+
+	if len(body.Type) == 0 {
+		body.Type = "room"
 	}
 
 	userID, err := authentication.GetUserIDFromSession(ctx)

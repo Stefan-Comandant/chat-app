@@ -5,6 +5,7 @@
 	import { loading, settings } from '../../stores.ts';
 
 	let rooms: ChatRoom[] = [];
+	let chats: User[] = [];
 	let USER: User = {};
 
 	let dialog: HTMLDialogElement;
@@ -14,6 +15,8 @@
 
 	onMount(() => {
 		rooms = $page.data.rooms;
+		chats = $page.data.chats;
+		console.log(chats);
 		USER = $page.data.USER;
 		$loading.goPast = true;
 	});
@@ -38,32 +41,55 @@
 			ofDay: time
 		};
 	}
+
+	let convos = 'rooms';
 </script>
 
 <div>
-	{#each rooms as room (room.id)}
-		<div class="room-container" class:dark={!!darkMode}>
-			<a
-				class="room"
-				class:dark={!!darkMode}
-				href="/chats/{room.id}"
-				on:contextmenu|preventDefault={async (event) => {
-					dialog.show();
+	<button
+		class="convo-switch {convos == 'rooms' ? 'active' : ''}"
+		on:click={() => {
+			convos = 'rooms';
+		}}>Rooms</button
+	>
+	<button
+		class="convo-switch {convos == 'chats' ? 'active' : ''}"
+		on:click={() => {
+			convos = 'chats';
+		}}>Chats</button
+	>
+	{#if convos == 'rooms'}
+		{#each rooms as room (room.id)}
+			<div class="room-container" class:dark={!!darkMode}>
+				<a
+					class="room"
+					class:dark={!!darkMode}
+					href="/chats/group/{room.id}"
+					on:contextmenu|preventDefault={async (event) => {
+						dialog.show();
 
-					selectedRoom = room;
+						selectedRoom = room;
 
-					dialog.style.top = event.pageY + 'px';
-					dialog.style.left = event.pageX + 'px';
-				}}
-			>
-				<div>{room.title}</div>
-				<span>{room.description ? room.description : 'No description'}</span>
-			</a>
-		</div>
-		<br />
+						dialog.style.top = event.pageY + 'px';
+						dialog.style.left = event.pageX + 'px';
+					}}
+				>
+					<div>{room.title}</div>
+					<span>{room.description ? room.description : 'No description'}</span>
+				</a>
+			</div>
+			<br />
+		{/each}
 	{:else}
-		<div><span>Nothing to see, bitch</span></div>
-	{/each}
+		{#each chats as chat (chat.id)}
+			<div class="room-container" class:dark={!!darkMode}>
+				<a class="room" class:dark={!!darkMode} href="/chats/direct/{chat.id}">
+					<div>{chat.username}</div>
+					<span>{chat.about ? chat.about : 'Masturbez!'}</span>
+				</a>
+			</div>
+			<br />
+		{/each}{/if}
 </div>
 
 <dialog class="popup" bind:this={dialog}>
@@ -105,7 +131,11 @@
 	</dialog>
 {/if}
 
-<a href="/chats/new">Create New Room</a>
+{#if convos == 'rooms'}
+	<a href="/chats/new">Create New Room</a>
+{:else}
+	<button type="button">New Chat</button>
+{/if}
 
 <style>
 	@import '../../lib/css/chats.css';

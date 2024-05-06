@@ -13,8 +13,8 @@ export async function AddChatRoom(info: ChatRoom) {
 	return data;
 }
 
-export async function GetChatRooms() {
-	const response = await fetch('/api/rooms', FetchConfig);
+export async function GetChatRooms(type: string) {
+	const response = await fetch(`/api/rooms/${type}`, FetchConfig);
 	const data = await response.json();
 
 	if (data.status === 'success') {

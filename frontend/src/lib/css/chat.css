@@ -184,6 +184,14 @@
 .room-title {
 	display: flex;
 	justify-content: center;
+	align-items: center;
+	gap: 2rem;
+}
+
+.room-picture {
+	width: 4rem;
+	height: 4rem;
+	border-radius: 50%;
 }
 
 .container.dark .room-title {
