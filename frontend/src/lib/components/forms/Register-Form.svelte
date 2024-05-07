@@ -72,27 +72,5 @@
 
 <style>
 	@import '../../css/authentication.css';
-
-	.pfp-input-container {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 20px;
-	}
-
-	.pfp-input-container label {
-		font-size: 20px;
-		color: #a0a0a0;
-	}
-
-	.pfp-input-container input {
-		display: none;
-	}
-
-	.pfp-input-container img {
-		width: 60px;
-		height: 60px;
-		border: 1px solid black;
-		border-radius: 50%;
-	}
+	@import '../../css/img-preview.css';
 </style>

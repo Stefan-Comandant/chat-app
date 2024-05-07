@@ -15,7 +15,8 @@
 
 	let info: ChatRoom = {
 		members: [],
-		admins: []
+		admins: [],
+		type: 'broadcast'
 	};
 
 	function AddMember(event: any, id: string = '') {
@@ -50,6 +51,10 @@
 	onMount(() => {
 		$loading.goPast = true;
 	});
+
+	let image: HTMLImageElement;
+	let fileInput: HTMLInputElement;
+	let showImage = false;
 </script>
 
 <form
@@ -62,6 +67,32 @@
 >
 	<div>
 		<input type="text" placeholder="Name" bind:value={info.title} />
+	</div>
+	<div class="pfp-input-container">
+		<label for="file-input">Enter a profile picture</label>
+		<input
+			id="file-input"
+			type="file"
+			accept=".jpg, .jpeg, .png"
+			bind:this={fileInput}
+			on:change={(event) => {
+				if (!fileInput || !fileInput.files) return;
+				const file = fileInput.files[0];
+
+				if (file) showImage = true;
+
+				const reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.addEventListener('load', () => {
+					const result = reader.result;
+					image.setAttribute('src', String(result));
+					info.profilepicture = String(result);
+				});
+			}}
+		/>
+		{#if showImage}
+			<img bind:this={image} alt="pfp" />
+		{/if}
 	</div>
 	<div>
 		<input type="text" placeholder="Description" bind:value={info.description} />
@@ -133,4 +164,5 @@
 <style>
 	@import '../../css/authentication.css';
 	@import '../../css/new-chat.css';
+	@import '../../css/img-preview.css';
 </style>

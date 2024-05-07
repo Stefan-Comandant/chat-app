@@ -14,21 +14,16 @@ import (
 )
 
 type ChatRoom struct {
-	ID          string         `json:"id" gorm:"primaryKey"`
-	Title       string         `json:"title" gorm:"not null"`
-	CreatedAt   time.Time      `json:"createdat" gorm:"not null;default:CURRENT_TIMESTAMP"`
-	Description string         `json:"description"`
-	Members     pq.StringArray `json:"members" gorm:"type:text[]"`
-	Admins      pq.StringArray `json:"admins" gorm:"not null;type:text[]"`
-	Owner       string         `json:"owner" gorm:"not null"`
-	Messages    pq.Int64Array  `json:"messages" gorm:"type:integer[]"`
-	Type        string         `json:"type"`
-}
-
-type Conversation struct {
-	ID       string         `json:"id" gorm:"primaryKey"`
-	Peers    pq.StringArray `json:"peers" gorm:"type:text[]"`
-	Messages pq.Int64Array  `json:"messages" gorm:"type:text[]"`
+	ID             string         `json:"id" gorm:"primaryKey"`
+	Title          string         `json:"title" gorm:"not null"`
+	ProfilePicture string         `json:"profilepicture"`
+	CreatedAt      time.Time      `json:"createdat" gorm:"not null;default:CURRENT_TIMESTAMP"`
+	Description    string         `json:"description"`
+	Members        pq.StringArray `json:"members" gorm:"type:text[]"`
+	Admins         pq.StringArray `json:"admins" gorm:"not null;type:text[]"`
+	Owner          string         `json:"owner" gorm:"not null"`
+	Messages       pq.Int64Array  `json:"messages" gorm:"type:integer[]"`
+	Type           string         `json:"type"`
 }
 
 func GetChatRooms(ctx *fiber.Ctx) error {
@@ -54,6 +49,15 @@ func GetChatRooms(ctx *fiber.Ctx) error {
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
+	}
+
+	for i, user := range response {
+		encoding, err := getProfilePictureEncoding(user.ProfilePicture, user.ID, "groups")
+		if err != nil {
+			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+			return err
+		}
+		response[i].ProfilePicture = string(encoding)
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
@@ -87,6 +91,13 @@ func GetChatRoomByID(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusNotAcceptable).JSON(&fiber.Map{"status": "error", "response": "You are not part of this group"})
 	}
 
+	encoding, err := getProfilePictureEncoding(response.ProfilePicture, response.ID, "groups")
+	if err != nil {
+		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+		return err
+	}
+	response.ProfilePicture = string(encoding)
+
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
 }
 
@@ -98,7 +109,7 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(body.Title) == 0 || len(body.Type) == 0 {
+	if len(body.Title) == 0 {
 		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request body"})
 		return nil
 	}
@@ -124,6 +135,16 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 	}
 	body.Members = append(body.Members, userID)
 	body.ID = uuid.NewString()
+
+	if len(body.ProfilePicture) > 0 && body.Type != "direct" {
+		fileType, err := authentication.StoreProfilePicture(body.ProfilePicture, body.ID, "groups")
+		if err != nil {
+			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
+			return err
+		}
+
+		body.ProfilePicture = fileType
+	}
 
 	err = database.DB.Clauses(clause.Returning{}).Table("chat_rooms").Create(&body).Error
 	if err != nil {
