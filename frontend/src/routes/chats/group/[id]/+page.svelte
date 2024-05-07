@@ -52,6 +52,7 @@
 
 <div class="container" class:dark={!!darkMode}>
 	<div class="room-title">
+		<img src={currentRoom.profilepicture} alt="pfp" class="room-picture" />
 		<span>{currentRoom.title}</span>
 	</div>
 	<MsgsContainer {messages} {currentRoomMembers} />

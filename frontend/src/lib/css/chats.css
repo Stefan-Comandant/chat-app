@@ -9,9 +9,10 @@
 	flex-direction: column;
 }
 
-.room-container {
+.room-container a {
 	display: flex;
-	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
 }
 
 .room {

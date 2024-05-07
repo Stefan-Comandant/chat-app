@@ -21,6 +21,7 @@ export interface Message {
 export interface ChatRoom {
 	id?: string;
 	title?: string;
+	profilepicture?: string;
 	createdat?: string;
 	description?: string;
 	members?: string[];

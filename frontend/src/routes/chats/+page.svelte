@@ -3,8 +3,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { loading, settings } from '../../stores.ts';
-	import { GetUsername, formatDate, getPeer } from '$lib/users.ts';
-	import ChatForm from '$lib/components/forms/Chat-Form.svelte';
+	import { formatDate, getPeer } from '$lib/users.ts';
 	import { AddChatRoom } from '$lib/chat-rooms.ts';
 	import { goto } from '$app/navigation';
 
@@ -61,8 +60,13 @@
 						dialog.style.left = event.pageX + 'px';
 					}}
 				>
-					<div>{group.title}</div>
-					<span>{group.description ? group.description : 'No description'}</span>
+					<div class="pfp-input-container">
+						<img src={group.profilepicture} alt="pfp" class="room-picture" />
+					</div>
+					<div>
+						<div>{group.title}</div>
+						<span>{group.description ? group.description : 'No description'}</span>
+					</div>
 				</a>
 			</div>
 			<br />
@@ -70,7 +74,12 @@
 	{:else}
 		{#each chats as chat (chat.id)}
 			<div class="room-container" class:dark={!!darkMode}>
-				<a class="room" class:dark={!!darkMode} href="/chats/direct/{chat.id}">
+				<a
+					class="room"
+					class:dark={!!darkMode}
+					href="/chats/direct/{chat.id}"
+					style="flex-direction: column; align-items: flex-start; gap"
+				>
 					<div>{getPeer(users, chat.members, USER).username}</div>
 					<span
 						>{getPeer(users, chat.members, USER).about
@@ -171,4 +180,5 @@
 <style>
 	@import '../../lib/css/chats.css';
 	@import '../../lib/css/new-chat.css';
+	@import '../../lib/css/img-preview.css';
 </style>
