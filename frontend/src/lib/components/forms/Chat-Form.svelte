@@ -74,7 +74,7 @@
 			>
 		</div>
 		<div class="members-container">
-			{#each info.members as member (member)}
+			{#each [...info.members] as member (member)}
 				<div class="member">
 					<img
 						class="profile-picture"

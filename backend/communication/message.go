@@ -2,6 +2,7 @@ package communication
 
 import (
 	"encoding/json"
+	"slices"
 	"time"
 
 	"go-chat-app/authentication"
@@ -16,24 +17,27 @@ var ActiveConnections = make(map[*websocket.Conn]bool)
 
 type Message struct {
 	ID     int       `json:"id" gorm:"primaryKey;autoIncrement"`
-	Text   string    `json:"text" gorm:"not null"`
-	SentAt time.Time `json:"sentat" gorm:"not null;default:CURRENT_TIMESTAMP"`
-	From   string    `json:"from" gorm:"not null"`
-	To     string    `json:"to" gorm:"not null"`
-	Type   string    `json:"type" gorm:"nont null"`
+	Text   string    `json:"text" gorm:"NOT NULL"`
+	SentAt time.Time `json:"sentat" gorm:"NOT NULL;default:CURRENT_TIMESTAMP"`
+	From   string    `json:"from" gorm:"NOT NULL"`
+	To     string    `json:"to" gorm:"NOT NULL"`
+	Type   string    `json:"type" gorm:"NOT NULL"`
 }
 
 func AddMessage(msg Message) (Message, error) {
+	var data ChatRoom
 	err := database.DB.Table("messages").Clauses(clause.Returning{}).Create(&msg).Error
 	if err != nil {
 		return Message{}, err
 	}
 
-	var data ChatRoom
-
 	err = database.DB.Clauses(clause.Returning{}).Table("chat_rooms").Where("id = ?", msg.To).Find(&data).Error
 	if err != nil {
 		return Message{}, err
+	}
+
+	if !slices.Contains(data.Members, msg.From) {
+		return Message{}, fiber.ErrNotAcceptable
 	}
 
 	data.Messages = append(data.Messages, int64(msg.ID))
@@ -44,6 +48,11 @@ func AddMessage(msg Message) (Message, error) {
 }
 
 func GetMessages(ctx *fiber.Ctx) error {
+	var id = ctx.Params("id")
+	if id == "" {
+		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid URL"})
+		return nil
+	}
 	userID, err := authentication.GetUserIDFromSession(ctx)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
@@ -57,7 +66,6 @@ func GetMessages(ctx *fiber.Ctx) error {
 
 	var response []Message
 	var room ChatRoom
-	var id = ctx.Params("id")
 
 	err = database.DB.Table("chat_rooms").Where("id = ?", id).First(&room).Error
 	if err != nil {
@@ -120,7 +128,7 @@ func SendMessage(conn *websocket.Conn) {
 			break
 		}
 
-		podcast(jsonData, id, dataType)
+		broadcast(jsonData, id, dataType)
 	}
 }
 
@@ -157,7 +165,7 @@ func DeleteMessage(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully deleted message!"})
 }
 
-func podcast(msg []byte, targetID string, msgType int) {
+func broadcast(msg []byte, targetID string, msgType int) {
 	for conn := range ActiveConnections {
 		var id = conn.Params("id")
 

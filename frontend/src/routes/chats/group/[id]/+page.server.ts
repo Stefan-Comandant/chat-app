@@ -17,17 +17,17 @@ export const load = async ({ fetch, params, parent }: any) => {
 		response: {}
 	};
 
-	messages = await fetch(`http://localhost:9000/api/rooms/${params.id}/messages`, FetchConfig).then(
+	messages = await fetch(`http://localhost:9000/api/room/${params.id}/messages`, FetchConfig).then(
 		(res: Response) => res.json()
 	);
 	if (!messages || messages.status !== 'success') messages.response = [];
 
-	members = await fetch(`http://localhost:9000/api/rooms/${params.id}/members`, FetchConfig).then(
+	members = await fetch(`http://localhost:9000/api/room/${params.id}/members`, FetchConfig).then(
 		(res: Response) => res.json()
 	);
 	if (!members || members.status !== 'success') members.response = [];
 
-	room = await fetch(`http://localhost:9000/api/rooms/${params.id}`, FetchConfig).then(
+	room = await fetch(`http://localhost:9000/api/room/${params.id}`, FetchConfig).then(
 		(res: Response) => res.json()
 	);
 	if (!room || room.status !== 'success') room.response = {};

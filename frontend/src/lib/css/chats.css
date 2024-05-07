@@ -36,3 +36,16 @@
 	color: #b0b0b0;
 	font-size: 12px;
 }
+
+.convo-switch {
+	background: #000000;
+	border: 1px solid rgba(0, 0, 0, 0);
+	cursor: pointer;
+	color: #fff;
+	border-radius: 20px;
+}
+.convo-switch.active {
+	background: #fff;
+	color: #121212;
+	border: 2px solid #121212;
+}

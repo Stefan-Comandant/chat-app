@@ -3,67 +3,84 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { loading, settings } from '../../stores.ts';
+	import { GetUsername, formatDate, getPeer } from '$lib/users.ts';
+	import ChatForm from '$lib/components/forms/Chat-Form.svelte';
+	import { AddChatRoom } from '$lib/chat-rooms.ts';
+	import { goto } from '$app/navigation';
 
-	let rooms: ChatRoom[] = [];
+	let groups: ChatRoom[] = [];
+	let chats: ChatRoom[] = [];
 	let USER: User = {};
+	let users: User[] = [];
 
 	let dialog: HTMLDialogElement;
 	let modal: HTMLDialogElement;
+	let usersModal: HTMLDialogElement;
 	let selectMode = 'view';
 	let selectedRoom: ChatRoom = { admins: [], owner: '' };
 
 	onMount(() => {
-		rooms = $page.data.rooms;
+		groups = $page.data.groups;
+		chats = $page.data.chats;
 		USER = $page.data.USER;
+		users = $page.data.users;
 		$loading.goPast = true;
 	});
 
 	$: darkMode = !$settings.LightMode;
 
-	function formatDate(dateStr: string): MessageDate {
-		if (!dateStr) return { ofYear: '', ofDay: '' };
-		const date = new Date(dateStr);
-		const hour = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
-		const minute = date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes();
-		const meridian = date.getHours() > 12 ? 'PM' : 'AM';
-		const day = date.getDate() > 9 ? date.getDate() : '0' + date.getDate();
-		const month = date.getMonth() > 9 ? date.getMonth() : '0' + date.getMonth();
-		const year = date.getFullYear();
-
-		const yearDate = `${day}-${month}-${year}`;
-		const time = `${hour}:${minute} ${meridian}`;
-
-		return {
-			ofYear: yearDate,
-			ofDay: time
-		};
-	}
+	let convos = 'rooms';
 </script>
 
 <div>
-	{#each rooms as room (room.id)}
-		<div class="room-container" class:dark={!!darkMode}>
-			<a
-				class="room"
-				class:dark={!!darkMode}
-				href="/chats/{room.id}"
-				on:contextmenu|preventDefault={async (event) => {
-					dialog.show();
+	<button
+		class="convo-switch {convos == 'rooms' ? 'active' : ''}"
+		on:click={() => {
+			convos = 'rooms';
+		}}>Rooms</button
+	>
+	<button
+		class="convo-switch {convos == 'chats' ? 'active' : ''}"
+		on:click={() => {
+			convos = 'chats';
+		}}>Chats</button
+	>
+	{#if convos == 'rooms'}
+		{#each groups as group (group.id)}
+			<div class="room-container" class:dark={!!darkMode}>
+				<a
+					class="room"
+					class:dark={!!darkMode}
+					href="/chats/group/{group.id}"
+					on:contextmenu|preventDefault={async (event) => {
+						dialog.show();
 
-					selectedRoom = room;
+						selectedRoom = group;
 
-					dialog.style.top = event.pageY + 'px';
-					dialog.style.left = event.pageX + 'px';
-				}}
-			>
-				<div>{room.title}</div>
-				<span>{room.description ? room.description : 'No description'}</span>
-			</a>
-		</div>
-		<br />
+						dialog.style.top = event.pageY + 'px';
+						dialog.style.left = event.pageX + 'px';
+					}}
+				>
+					<div>{group.title}</div>
+					<span>{group.description ? group.description : 'No description'}</span>
+				</a>
+			</div>
+			<br />
+		{/each}
 	{:else}
-		<div><span>Nothing to see, bitch</span></div>
-	{/each}
+		{#each chats as chat (chat.id)}
+			<div class="room-container" class:dark={!!darkMode}>
+				<a class="room" class:dark={!!darkMode} href="/chats/direct/{chat.id}">
+					<div>{getPeer(users, chat.members, USER).username}</div>
+					<span
+						>{getPeer(users, chat.members, USER).about
+							? getPeer(users, chat.members, USER).about
+							: 'Masturbez!'}</span
+					>
+				</a>
+			</div>
+			<br />
+		{/each}{/if}
 </div>
 
 <dialog class="popup" bind:this={dialog}>
@@ -105,8 +122,53 @@
 	</dialog>
 {/if}
 
-<a href="/chats/new">Create New Room</a>
+{#if convos == 'rooms'}
+	<a href="/chats/new">Create New Room</a>
+{:else}
+	<button
+		type="button"
+		on:click={() => {
+			usersModal.open ? usersModal.close() : usersModal.showModal();
+		}}>New Chat</button
+	>
+{/if}
+
+<dialog bind:this={usersModal} class:dark={!!darkMode}>
+	<div>
+		{#each [...users] as user (user.id)}
+			<div class="account">
+				<div class="details">
+					<img class="profile-picture" alt="Pfp" src={user.profilepicture} />
+					<div>
+						<div>{user.username}</div>
+						<span>{user.about}</span>
+					</div>
+				</div>
+				<div>
+					<button
+						type="button"
+						on:click={async () => {
+							const response = await AddChatRoom({
+								title: 'Direct Conversation',
+								description: '',
+								members: [user.id ? user.id : ''],
+								admins: [],
+								messages: [],
+								type: 'direct'
+							});
+
+							if (response.status === 'success') {
+								goto(`/chats/direct/${response.id}`);
+							}
+						}}>New Chat</button
+					>
+				</div>
+			</div>
+		{/each}
+	</div>
+</dialog>
 
 <style>
 	@import '../../lib/css/chats.css';
+	@import '../../lib/css/new-chat.css';
 </style>

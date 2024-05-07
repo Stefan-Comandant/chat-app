@@ -28,6 +28,7 @@ export interface ChatRoom {
 	owner?: string;
 	ownerData?: User;
 	messages?: number[];
+	type?: string;
 }
 
 export interface HTTPResponse {
