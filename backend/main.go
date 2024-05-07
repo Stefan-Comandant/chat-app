@@ -49,7 +49,8 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	router.Use(middlewares.AuthMiddleware, middlewares.LoggerMiddleware)
+	// router.Use(middlewares.AuthMiddleware, middlewares.LoggerMiddleware)
+	router.Use(middlewares.AuthMiddleware)
 
 	api := router.Group("/api")
 
@@ -61,9 +62,9 @@ func main() {
 
 	// Rooms
 	api.Get("/rooms/:type", communication.GetChatRooms)
-	api.Get("/rooms/:id/:type", communication.GetChatRoomByID)
+	api.Get("/room/:id", communication.GetChatRoomByID)
 	api.Get("/room/:id/members", communication.GetChatRoomMembers)
-	api.Get("/room/:id/:type/messages", communication.GetMessages)
+	api.Get("/room/:id/messages", communication.GetMessages)
 	api.Patch("/room/:id", communication.EditChatRoom)
 	api.Delete("/room/:id", communication.DeleteChatRoom)
 	api.Post("/rooms", communication.CreateChatRoom)

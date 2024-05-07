@@ -30,6 +30,8 @@
 		$loading.goPast = true;
 
 		messages = messages.map(computeDateDivider);
+
+		console.log(peer);
 	});
 
 	function computeDateDivider(msg: Message, i: number): Message {

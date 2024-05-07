@@ -2,6 +2,7 @@ package communication
 
 import (
 	"encoding/json"
+	"slices"
 	"time"
 
 	"go-chat-app/authentication"
@@ -24,31 +25,31 @@ type Message struct {
 }
 
 func AddMessage(msg Message) (Message, error) {
+	var data ChatRoom
 	err := database.DB.Table("messages").Clauses(clause.Returning{}).Create(&msg).Error
 	if err != nil {
 		return Message{}, err
 	}
 
-	if msg.Type == "broadcast" {
-		var data ChatRoom
-
-		err = database.DB.Clauses(clause.Returning{}).Table("chat_rooms").Where("id = ?", msg.To).Find(&data).Error
-		if err != nil {
-			return Message{}, err
-		}
-
-		data.Messages = append(data.Messages, int64(msg.ID))
-
-		err = database.DB.Table("chat_rooms").Where("id = ?", msg.To).Save(&data).Error
+	err = database.DB.Clauses(clause.Returning{}).Table("chat_rooms").Where("id = ?", msg.To).Find(&data).Error
+	if err != nil {
+		return Message{}, err
 	}
+
+	if !slices.Contains(data.Members, msg.From) {
+		return Message{}, fiber.ErrNotAcceptable
+	}
+
+	data.Messages = append(data.Messages, int64(msg.ID))
+
+	err = database.DB.Table("chat_rooms").Where("id = ?", msg.To).Save(&data).Error
 
 	return msg, err
 }
 
 func GetMessages(ctx *fiber.Ctx) error {
-	var conversationType = ctx.Params("type")
 	var id = ctx.Params("id")
-	if conversationType == "" || id == "" {
+	if id == "" {
 		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid URL"})
 		return nil
 	}
@@ -65,16 +66,6 @@ func GetMessages(ctx *fiber.Ctx) error {
 
 	var response []Message
 	var room ChatRoom
-
-	if conversationType == "direct" {
-		err = database.DB.Table("messages").Where(`"to" = ? OR "to" = ?`, id, userID).Find(&response).Error
-		if err != nil {
-			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-			return err
-		}
-
-		return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
-	}
 
 	err = database.DB.Table("chat_rooms").Where("id = ?", id).First(&room).Error
 	if err != nil {

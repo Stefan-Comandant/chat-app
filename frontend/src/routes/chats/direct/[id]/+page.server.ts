@@ -7,20 +7,31 @@ export const load = async ({ fetch, params, parent }: any) => {
 		response: []
 	};
 
-	let peer: { status?: string; response?: User } = {
+	let room: { status?: string; response?: ChatRoom } = {
 		status: '',
 		response: {}
 	};
 
-	messages = await fetch(
-		`http://localhost:9000/api/room/${params.id}/direct/messages`,
-		FetchConfig
-	).then((res: Response) => res.json());
+	let peer: { status?: string; response?: ChatRoom } = {
+		status: '',
+		response: {}
+	};
+
+	messages = await fetch(`http://localhost:9000/api/room/${params.id}/messages`, FetchConfig).then(
+		(res: Response) => res.json()
+	);
 
 	if (!messages || messages.status !== 'success') messages.response = [];
 
-	peer = await fetch(`http://localhost:9000/api/users/${params.id}`, FetchConfig).then(
+	room = await fetch(`http://localhost:9000/api/room/${params.id}`, FetchConfig).then(
 		(res: Response) => res.json()
+	);
+
+	if (!room || room.status !== 'success') room.response = {};
+	const shit = room.response?.members?.filter((member) => member != data.USER.id)[0];
+
+	peer = await fetch(`http://localhost:9000/api/users/${shit}`, FetchConfig).then((res: Response) =>
+		res.json()
 	);
 
 	if (!peer || peer.status !== 'success') peer.response = {};

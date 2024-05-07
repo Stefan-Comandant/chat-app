@@ -4,7 +4,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { loading, settings } from '../stores.ts';
 	import type { Setting } from '$lib/interfaces.ts';
-	import { afterNavigate, beforeNavigate } from '$app/navigation';
+	import { beforeNavigate } from '$app/navigation';
 
 	let unsubscribe = () => {};
 	let setting: Setting = {

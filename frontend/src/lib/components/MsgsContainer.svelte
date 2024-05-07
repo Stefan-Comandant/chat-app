@@ -20,10 +20,7 @@
 				<img
 					class="msg-profile-picture"
 					alt="pfp"
-					src={currentRoomMembers.length == 2
-						? currentRoomMembers.filter((member) => member.id != $page.data.USER.id)[0]
-								?.profilepicture
-						: getProfilePicture(message.from, currentRoomMembers)}
+					src={getProfilePicture(message.from, currentRoomMembers)}
 				/>
 			{/if}
 			<div class="msg-content" class:sent-by-me={$page.data.USER.id === message.from}>

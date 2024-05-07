@@ -1,7 +1,6 @@
 package communication
 
 import (
-	"log"
 	"slices"
 	"time"
 
@@ -25,6 +24,12 @@ type ChatRoom struct {
 	Type        string         `json:"type"`
 }
 
+type Conversation struct {
+	ID       string         `json:"id" gorm:"primaryKey"`
+	Peers    pq.StringArray `json:"peers" gorm:"type:text[]"`
+	Messages pq.Int64Array  `json:"messages" gorm:"type:text[]"`
+}
+
 func GetChatRooms(ctx *fiber.Ctx) error {
 	var conversationType = ctx.Params("type")
 	if conversationType == "" {
@@ -41,51 +46,10 @@ func GetChatRooms(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid session!"})
 	}
 
-	if conversationType == "direct" {
-		//TODO: add a way to make the websocket conn work
-		var IDs []string
-		var stuff []string
-		err = database.DB.Table("messages").Select(`"from"`, `"to"`).Where(`"from" = ? OR "to" = ?`, userID, userID).Find(&stuff).Error
-		if err != nil {
-			log.Println(err)
-		}
-
-		for _, id := range stuff {
-			if !slices.Contains(IDs, id) {
-				IDs = append(IDs, id)
-			}
-		}
-
-		var response []authentication.User
-
-		if len(IDs) == 0 {
-			return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
-		}
-
-		err = database.DB.Table("users").Where("id IN ?", IDs).Find(&response).Error
-		if err != nil {
-			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-			return err
-		}
-
-		for i, user := range response {
-			encoding, err := getProfilePictureEncoding(user)
-			if err != nil {
-				ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
-				return err
-			}
-
-			response[i].ProfilePicture = encoding
-		}
-
-		return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
-
-	}
-
 	var response []ChatRoom
 
 	// Select the chat rooms where the userID is present in the members column array of each row
-	err = database.DB.Table("chat_rooms").Where("? = ANY(members)", userID).Find(&response).Error
+	err = database.DB.Table("chat_rooms").Where("? = ANY(members) AND type = ?", userID, conversationType).Find(&response).Error
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
@@ -97,6 +61,10 @@ func GetChatRooms(ctx *fiber.Ctx) error {
 func GetChatRoomByID(ctx *fiber.Ctx) error {
 	var response ChatRoom
 	var id = ctx.Params("id")
+	if id == "" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request"})
+	}
+
 	userID, err := authentication.GetUserIDFromSession(ctx)
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
@@ -114,6 +82,10 @@ func GetChatRoomByID(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if !slices.Contains(response.Members, userID) {
+		return ctx.Status(fiber.StatusNotAcceptable).JSON(&fiber.Map{"status": "error", "response": "You are not part of this group"})
+	}
+
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
 }
 
@@ -125,13 +97,13 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if len(body.Title) == 0 {
+	if len(body.Title) == 0 || len(body.Type) == 0 {
 		ctx.Status(fiber.StatusBadRequest).JSON(&fiber.Map{"status": "error", "response": "Invalid request body"})
 		return nil
 	}
 
 	if len(body.Type) == 0 {
-		body.Type = "room"
+		body.Type = "broadcast"
 	}
 
 	userID, err := authentication.GetUserIDFromSession(ctx)
@@ -145,9 +117,11 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 		return nil
 	}
 
-	body.Owner = userID
+	if body.Type == "broadcast" {
+		body.Owner = userID
+		body.Admins = append(body.Admins, userID)
+	}
 	body.Members = append(body.Members, userID)
-	body.Admins = append(body.Admins, userID)
 	body.ID = uuid.NewString()
 
 	err = database.DB.Table("chat_rooms").Create(&body).Error
