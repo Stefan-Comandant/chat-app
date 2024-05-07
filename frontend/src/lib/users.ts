@@ -79,6 +79,8 @@ export function getProfilePicture(id: string = '', members: User[] = []): string
 	if (!result || !result.profilepicture) return '';
 	return result.profilepicture;
 }
-export function getPeer(memebers: User[], USER: User): User {
-	return memebers.filter((member) => member.id != USER.id)[0];
+export function getPeer(users: User[] = [], members: string[] = [], USER: User = {}): User {
+	return users.filter((user) => {
+		return user.id == members.filter((member) => member != USER.id)[0];
+	})[0];
 }

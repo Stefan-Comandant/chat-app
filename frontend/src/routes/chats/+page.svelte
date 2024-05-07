@@ -6,6 +6,7 @@
 	import { GetUsername, formatDate, getPeer } from '$lib/users.ts';
 	import ChatForm from '$lib/components/forms/Chat-Form.svelte';
 	import { AddChatRoom } from '$lib/chat-rooms.ts';
+	import { goto } from '$app/navigation';
 
 	let groups: ChatRoom[] = [];
 	let chats: ChatRoom[] = [];
@@ -70,8 +71,12 @@
 		{#each chats as chat (chat.id)}
 			<div class="room-container" class:dark={!!darkMode}>
 				<a class="room" class:dark={!!darkMode} href="/chats/direct/{chat.id}">
-					<div>{getPeer(users, USER).username}</div>
-					<span>{getPeer(users, USER).about ? getPeer(users, USER).about : 'Masturbez!'}</span>
+					<div>{getPeer(users, chat.members, USER).username}</div>
+					<span
+						>{getPeer(users, chat.members, USER).about
+							? getPeer(users, chat.members, USER).about
+							: 'Masturbez!'}</span
+					>
 				</a>
 			</div>
 			<br />
@@ -152,7 +157,9 @@
 								type: 'direct'
 							});
 
-							console.log(response);
+							if (response.status === 'success') {
+								goto(`/chats/direct/${response.id}`);
+							}
 						}}>New Chat</button
 					>
 				</div>

@@ -10,6 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
+	"gorm.io/gorm/clause"
 )
 
 type ChatRoom struct {
@@ -124,13 +125,13 @@ func CreateChatRoom(ctx *fiber.Ctx) error {
 	body.Members = append(body.Members, userID)
 	body.ID = uuid.NewString()
 
-	err = database.DB.Table("chat_rooms").Create(&body).Error
+	err = database.DB.Clauses(clause.Returning{}).Table("chat_rooms").Create(&body).Error
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully created chat room!"})
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully created chat room!", "id": body.ID})
 }
 
 func EditChatRoom(ctx *fiber.Ctx) error {
