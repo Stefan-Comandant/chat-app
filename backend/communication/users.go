@@ -32,7 +32,7 @@ func GetUsers(ctx *fiber.Ctx) error {
 	}
 
 	for i, user := range response {
-		encoding, err := getProfilePictureEncoding(user)
+		encoding, err := getProfilePictureEncoding(user.ProfilePicture, user.ID, "profiles")
 		if err != nil {
 			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 			return err
@@ -53,7 +53,7 @@ func GetUserByID(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	encoding, err := getProfilePictureEncoding(response)
+	encoding, err := getProfilePictureEncoding(response.ProfilePicture, response.ID, "profiles")
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
@@ -81,7 +81,7 @@ func GetChatRoomMembers(ctx *fiber.Ctx) error {
 	}
 
 	for i, user := range response {
-		encoding, err := getProfilePictureEncoding(user)
+		encoding, err := getProfilePictureEncoding(user.ProfilePicture, user.ID, "profiles")
 		if err != nil {
 			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 			return err
@@ -112,7 +112,7 @@ func GetUserData(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	encoding, err := getProfilePictureEncoding(response)
+	encoding, err := getProfilePictureEncoding(response.ProfilePicture, response.ID, "profiles")
 	if err != nil {
 		ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 		return err
@@ -123,26 +123,11 @@ func GetUserData(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": response})
 }
 
-func getProfilePictureEncoding(user authentication.User) (string, error) {
-	var fileType string
-	var code string
-	var path string
-	if len(user.ProfilePicture) != 0 {
-		code = string([]byte(user.ProfilePicture)[4:])
-
-		switch string([]byte(user.ProfilePicture)[:4]) {
-		case "png;":
-			fileType = "png"
-		case "jpg;":
-			fileType = "jpg"
-		case "jpeg":
-			fileType = "jpeg"
-			code = string([]byte(user.ProfilePicture)[5:])
-		}
-		path = fmt.Sprintf("../profiles/%v.%v", code, fileType)
-	} else {
+func getProfilePictureEncoding(fileType string, id string, profileType string) (string, error) {
+	var path = fmt.Sprintf("../pictures/%v/%v.%v", profileType, id, fileType)
+	if len(fileType) == 0 || len(id) == 0 {
 		fileType = "png"
-		path = "../profiles/default.png"
+		path = "../pictures/default.png"
 	}
 
 	content, err := os.ReadFile(path)

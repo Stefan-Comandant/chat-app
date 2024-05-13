@@ -72,17 +72,16 @@ func Register(ctx *fiber.Ctx) error {
 	}
 	var fileType string
 
+	body.ID = uuid.NewString()
 	if len(body.ProfilePicture) > 0 {
-
-		fileType, err = storeProfilePicture(body, code)
+		fileType, err = StoreProfilePicture(body.ProfilePicture, body.ID, "profiles")
 		if err != nil {
 			ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{"status": "error", "response": err.Error()})
 			return err
 		}
 
-		body.ProfilePicture = fmt.Sprintf("%v;%v", fileType, code)
+		body.ProfilePicture = fileType
 	}
-	body.ID = uuid.NewString()
 
 	err = database.DB.Clauses(clause.Returning{}).Table("users").Create(&body).Error
 	if err != nil {
@@ -116,10 +115,10 @@ func Register(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{"status": "success", "response": "Succesfully registerd account!", "id": body.ID})
 }
 
-func storeProfilePicture(body User, code string) (string, error) {
+func StoreProfilePicture(encodedImg string, id string, profileType string) (string, error) {
 	var fileType string
 
-	switch string([]byte(body.ProfilePicture)[:15]) {
+	switch string([]byte(encodedImg)[:15]) {
 	case "data:image/png;":
 		fileType = "png"
 	case "data:image/jpg;":
@@ -128,7 +127,7 @@ func storeProfilePicture(body User, code string) (string, error) {
 		fileType = "jpeg"
 	}
 
-	fileName := fmt.Sprintf("../profiles/%v.%v", code, fileType)
+	fileName := fmt.Sprintf("../pictures/%v/%v.%v", profileType, id, fileType)
 
 	left, right := 22, 4
 
@@ -136,7 +135,7 @@ func storeProfilePicture(body User, code string) (string, error) {
 		left = 23
 	}
 
-	fileContent, err := base64.StdEncoding.DecodeString(string([]byte(body.ProfilePicture)[left : len(body.ProfilePicture)-right]))
+	fileContent, err := base64.StdEncoding.DecodeString(string([]byte(encodedImg)[left : len(encodedImg)-right]))
 	if err != nil {
 		return fileType, err
 	}
