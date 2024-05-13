@@ -58,5 +58,5 @@
 </div>
 
 <style>
-	@import '../css/chat.css';
+	@import '../css/messages/container.css';
 </style>

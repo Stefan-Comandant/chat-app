@@ -1,0 +1,28 @@
+dialog.dark .details {
+	border: 2px solid #fff;
+}
+dialog.dark .details > div > div,
+dialog.dark .details > div > span {
+	color: #fff;
+}
+dialog.dark .check > div {
+	color: #fff;
+}
+
+.details img {
+	width: 55px;
+	height: 55px;
+}
+
+.check {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.checks {
+	height: 58px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}

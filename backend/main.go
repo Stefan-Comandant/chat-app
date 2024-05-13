@@ -49,8 +49,8 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// router.Use(middlewares.AuthMiddleware, middlewares.LoggerMiddleware)
-	router.Use(middlewares.AuthMiddleware)
+	router.Use(middlewares.AuthMiddleware, middlewares.LoggerMiddleware)
+	// router.Use(middlewares.AuthMiddleware)
 
 	api := router.Group("/api")
 

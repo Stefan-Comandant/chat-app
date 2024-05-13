@@ -72,42 +72,12 @@ dialog.dark {
 	justify-content: space-between;
 }
 
-dialog.dark .details {
-	border: 2px solid #fff;
-}
-
 form.dark .members-title > span {
 	color: #fff;
 }
 
 form.dark .members-container {
 	border: 2px solid #fff;
-}
-
-dialog.dark .details > div > div,
-dialog.dark .details > div > span {
-	color: #fff;
-}
-
-.details img {
-	width: 55px;
-	height: 55px;
-}
-
-.check {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-}
-
-.checks {
-	height: 58px;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-}
-dialog.dark .check > div {
-	color: #fff;
 }
 .edit-btn {
 	transform: scale(0.4);

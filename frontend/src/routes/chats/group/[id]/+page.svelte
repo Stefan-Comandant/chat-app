@@ -45,5 +45,5 @@
 </div>
 
 <style>
-	@import '../../../../lib/css/chat.css';
+	@import '../../../../lib/css/messages/chat.css';
 </style>
