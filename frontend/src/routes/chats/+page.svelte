@@ -179,6 +179,6 @@
 
 <style>
 	@import '../../lib/css/chats.css';
-	@import '../../lib/css/new-chat.css';
+	@import '../../lib/css/users/dialog.css';
 	@import '../../lib/css/img-preview.css';
 </style>

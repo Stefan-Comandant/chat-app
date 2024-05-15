@@ -164,5 +164,6 @@
 <style>
 	@import '../../css/authentication.css';
 	@import '../../css/new-chat.css';
+	@import '../../css/users/dialog.css';
 	@import '../../css/img-preview.css';
 </style>

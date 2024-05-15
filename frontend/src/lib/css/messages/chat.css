@@ -1,0 +1,39 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: calc(100vh - 60px);
+}
+.container.dark .msg-content {
+	color: #fff;
+	background: #303030;
+}
+.container.dark .sent-by-me {
+	background: #02042a;
+}
+.container.dark .room-title {
+	color: #fff;
+}
+
+.room-title {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 2rem;
+}
+
+.room-picture {
+	width: 4rem;
+	height: 4rem;
+	border-radius: 50%;
+}
+
+.room-title span {
+	font-style: italic;
+	font-weight: 600;
+	font-size: 25px;
+}

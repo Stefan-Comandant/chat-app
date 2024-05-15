@@ -39,5 +39,5 @@
 </div>
 
 <style>
-	@import '../css/chat.css';
+	@import '../css/messages/input.css';
 </style>

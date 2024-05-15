@@ -2,10 +2,23 @@
 	import { page } from '$app/stores';
 	import type { Message, User } from '$lib/interfaces.ts';
 	import { GetUsername, formatDate, getProfilePicture } from '$lib/users.ts';
+	import { onMount } from 'svelte';
 
 	export let messages: Message[] = [];
 	let dates: Map<number, string> = new Map();
 	export let currentRoomMembers: User[] = [];
+
+	function computeDateDivider(msg: Message, i: number): Message {
+		const formattedDate = formatDate(String(msg.sentat));
+		if (![...dates.values()].includes(String(formattedDate.ofYear))) {
+			dates.set(i, String(formattedDate.ofYear));
+		}
+
+		msg.shortened = msg.text.length > 1400;
+		return msg;
+	}
+
+	$: messages = messages.map(computeDateDivider);
 </script>
 
 <div class="msg-container">
@@ -45,5 +58,5 @@
 </div>
 
 <style>
-	@import '../css/chat.css';
+	@import '../css/messages/container.css';
 </style>
