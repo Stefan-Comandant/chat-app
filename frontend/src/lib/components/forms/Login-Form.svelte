@@ -32,7 +32,7 @@
 	<div>
 		<input type="text" placeholder="Enter your password" bind:value={info.password} />
 	</div>
-	<button type="submit" style="pointer-events: {isLoading ? 'none' : 'auto'}; ">
+	<button type="submit" style="pointer-events: {isLoading ? 'none' : 'auto'};">
 		{#if isLoading}
 			<LoadingCircle />
 		{:else}
