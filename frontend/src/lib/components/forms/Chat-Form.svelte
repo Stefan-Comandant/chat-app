@@ -58,12 +58,20 @@
 	let showImage = false;
 
 	let isLoading = false;
+
+	$: {
+		if (isLoading) isLoading = Object.values(response).every((key) => key.length === 0);
+	}
 </script>
 
 <form
 	class:dark={!!darkMode}
 	on:submit|preventDefault={async () => {
 		if (!info.title?.length) return;
+		response = {
+			response: '',
+			status: ''
+		};
 
 		isLoading = true;
 

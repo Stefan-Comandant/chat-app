@@ -23,13 +23,20 @@
 	onMount(() => {
 		$loading.goPast = true;
 	});
-
 	let isLoading = false;
+
+	$: {
+		if (isLoading) isLoading = Object.values(response).every((key) => key.length === 0);
+	}
 </script>
 
 <form
 	class:dark={darkMode}
 	on:submit|preventDefault={() => {
+		response = {
+			response: '',
+			status: ''
+		};
 		isLoading = true;
 		dispatch('register', info);
 	}}
@@ -44,7 +51,7 @@
 			type="file"
 			accept=".jpg, .jpeg, .png"
 			bind:this={fileInput}
-			on:change={(event) => {
+			on:change={() => {
 				const file = fileInput.files[0];
 
 				if (file) showImage = true;
