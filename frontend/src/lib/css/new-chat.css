@@ -26,10 +26,6 @@
 	overflow-y: scroll;
 }
 
-.members-container::-webkit-scrollbar {
-	display: none;
-}
-
 dialog {
 	width: 427px;
 	height: 427px;

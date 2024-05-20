@@ -143,7 +143,7 @@
 {/if}
 
 <dialog bind:this={usersModal} class:dark={!!darkMode}>
-	<div>
+	<div style="display: flex; flex-direction: column; gap: 1.2rem">
 		{#each [...users] as user (user.id)}
 			<div class="account">
 				<div class="details">

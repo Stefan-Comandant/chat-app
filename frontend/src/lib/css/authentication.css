@@ -32,8 +32,8 @@ form {
 	gap: 24px;
 	height: 426px;
 	min-height: fit-content;
-	width: 350px;
 	min-width: fit-content;
+	width: 350px;
 	border: #000 solid 1px;
 	padding: 24px 15px;
 	border-radius: 25px;

@@ -146,7 +146,7 @@
 	<div>
 		{#each users as user (user.id)}
 			<div class="account">
-				<div class="details">
+				<div class="details" style="border: none;">
 					<img class="profile-picture" alt="Pfp" src={user.profilepicture} />
 					<div>
 						<div>{user.username}</div>

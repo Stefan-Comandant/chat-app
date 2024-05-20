@@ -40,8 +40,8 @@
 	</div>
 	{#if messages.length > 0}
 		<MsgsContainer {messages} currentRoomMembers={[$page.data.USER, peer]} />
-		<MsgInput {id} {socket} />
 	{/if}
+	<MsgInput {id} {socket} />
 </div>
 
 <style>

@@ -1,28 +1,63 @@
-dialog.dark .details {
+.details > div > div,
+.details > div > span {
+	color: #121212;
+}
+.check > div {
+	color: #121212;
+}
+
+dialog {
+	min-width: fit-content;
+	min-height: fit-content;
+}
+
+dialog.dark {
+	background: #121212;
+	border: 2px solid #fff;
+}
+
+dialog.dark .account {
 	border: 2px solid #fff;
 }
 dialog.dark .details > div > div,
 dialog.dark .details > div > span {
 	color: #fff;
 }
+
+.account {
+	border: 2px solid #121212;
+	border-radius: 25px;
+	width: 20rem;
+	min-width: fit-content;
+	padding: 0.8rem 1.8rem;
+	display: flex;
+	justify-content: space-between;
+}
+
+.details {
+	display: flex;
+	gap: 1rem;
+}
+
 dialog.dark .check > div {
-	color: #fff;
+	color: #ffffff;
 }
 
 .details img {
 	width: 55px;
 	height: 55px;
-}
-
-.check {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+	border-radius: 50%;
 }
 
 .checks {
 	height: 58px;
 	display: flex;
 	flex-direction: column;
+	justify-content: space-between;
+}
+
+.check {
+	display: flex;
+	align-items: center;
 	justify-content: space-between;
 }
