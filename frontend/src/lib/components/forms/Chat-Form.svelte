@@ -5,6 +5,7 @@
 	import EditButton from '../buttons/Edit-Button.svelte';
 	import { GetUsers } from '$lib/users.ts';
 	import { loading, settings } from '../../../stores.ts';
+	import LoadingCircle from '../LoadingCircle.svelte';
 	let users: User[] = [];
 	let openModal = false;
 
@@ -55,12 +56,24 @@
 	let image: HTMLImageElement;
 	let fileInput: HTMLInputElement;
 	let showImage = false;
+
+	let isLoading = false;
+
+	$: {
+		if (isLoading) isLoading = Object.values(response).every((key) => key.length === 0);
+	}
 </script>
 
 <form
 	class:dark={!!darkMode}
 	on:submit|preventDefault={async () => {
 		if (!info.title?.length) return;
+		response = {
+			response: '',
+			status: ''
+		};
+
+		isLoading = true;
 
 		response = await AddChatRoom(info);
 	}}
@@ -75,7 +88,7 @@
 			type="file"
 			accept=".jpg, .jpeg, .png"
 			bind:this={fileInput}
-			on:change={(event) => {
+			on:change={() => {
 				if (!fileInput || !fileInput.files) return;
 				const file = fileInput.files[0];
 
@@ -117,7 +130,13 @@
 			{/each}
 		</div>
 	</div>
-	<button type="submit">Submit</button>
+	<button type="submit" style="pointer-events: {isLoading ? 'none' : 'auto'};">
+		{#if isLoading}
+			<LoadingCircle />
+		{:else}
+			Submit
+		{/if}</button
+	>
 	<span class:error={response.status === 'error'} class:success={response.status === 'success'}
 		>{response.response}</span
 	>
@@ -157,7 +176,6 @@
 				</div>
 			</div>
 		{/each}
-		<div></div>
 	</div>
 </dialog>
 

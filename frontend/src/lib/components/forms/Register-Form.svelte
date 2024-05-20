@@ -2,6 +2,7 @@
 	import type { User, HTTPResponse } from '$lib/interfaces.ts';
 	import { createEventDispatcher, onMount } from 'svelte';
 	import { loading, settings } from '../../../stores.ts';
+	import LoadingCircle from '../LoadingCircle.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -22,11 +23,21 @@
 	onMount(() => {
 		$loading.goPast = true;
 	});
+	let isLoading = false;
+
+	$: {
+		if (isLoading) isLoading = Object.values(response).every((key) => key.length === 0);
+	}
 </script>
 
 <form
 	class:dark={darkMode}
 	on:submit|preventDefault={() => {
+		response = {
+			response: '',
+			status: ''
+		};
+		isLoading = true;
 		dispatch('register', info);
 	}}
 >
@@ -40,7 +51,7 @@
 			type="file"
 			accept=".jpg, .jpeg, .png"
 			bind:this={fileInput}
-			on:change={(event) => {
+			on:change={() => {
 				const file = fileInput.files[0];
 
 				if (file) showImage = true;
@@ -64,7 +75,13 @@
 	<div>
 		<input type="text" placeholder="Enter your password" bind:value={info.password} />
 	</div>
-	<button type="submit">Submit</button>
+	<button type="submit" style="pointer-events: {isLoading ? 'none' : 'auto'};">
+		{#if isLoading}
+			<LoadingCircle />
+		{:else}
+			Submit
+		{/if}
+	</button>
 	<span class:error={response.status === 'error'} class:success={response.status === 'success'}
 		>{response.response}</span
 	>

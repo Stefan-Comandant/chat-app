@@ -56,13 +56,16 @@ form > button {
 	border-radius: 25px;
 	min-width: fit-content;
 	width: 240px;
-	height: 43px;
+	height: 3rem;
 	color: #005fcf;
 	font-size: 25px;
 	transition:
 		background 0.5s,
 		color 0.5s;
 	margin-top: auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 form > button:focus,
