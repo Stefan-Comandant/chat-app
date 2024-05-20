@@ -37,5 +37,7 @@ func AuthMiddleware(ctx *fiber.Ctx) error {
 		}
 	}
 
+	ctx.Locals("userID", userId)
+
 	return ctx.Next()
 }
