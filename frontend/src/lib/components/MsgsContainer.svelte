@@ -2,10 +2,9 @@
 	import { page } from '$app/stores';
 	import type { Message, User } from '$lib/interfaces.ts';
 	import { GetUsername, formatDate, getProfilePicture } from '$lib/users.ts';
-	import { onMount } from 'svelte';
 
 	export let messages: Message[] = [];
-	let dates: Map<number, string> = new Map();
+	const dates: Map<number, string> = new Map();
 	export let currentRoomMembers: User[] = [];
 
 	function computeDateDivider(msg: Message, i: number): Message {
@@ -43,11 +42,13 @@
 						></span
 					>
 				{/if}
-				<div class={message.shortened ? 'shortened' : ''}>
+				<div class:shortened={message.shortened}>
 					{message.shortened ? message.text.split('').slice(0, 1400).join('') : message.text}
 					{#if message.shortened}
-						<button type="button" class="show-more" on:click={() => (message.shortened = false)}
-							>Show more</button
+						<button
+							type="button"
+							class="show-more"
+							on:click={() => (message = { ...message, shortened: false })}>Show more</button
 						>
 					{/if}
 				</div>

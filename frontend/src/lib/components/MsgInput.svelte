@@ -4,7 +4,6 @@
 	export let id = '';
 	let msg = '';
 	export let socket: WebSocket;
-	let showBtn = false;
 
 	/*
   {#if showBtn}
@@ -21,7 +20,7 @@
 </script>
 
 <div class="msg-input">
-	<textarea bind:value={msg} />
+	<textarea bind:value={msg} spellcheck="false" />
 	<button
 		type="button"
 		on:click={() => {

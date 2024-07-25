@@ -79,7 +79,7 @@
 		border-bottom: 1px solid #b0b0b0;
 		overflow-x: scroll;
 		z-index: 1000;
-		background: #fff;
+		background: #4a90e2;
 	}
 
 	nav::-webkit-scrollbar {
@@ -104,7 +104,7 @@
 	}
 
 	.active {
-		background: #d6d6d6;
+		background: #00bfa5;
 	}
 
 	.active.dark {

@@ -6,7 +6,7 @@
 	import MsgInput from '$lib/components/MsgInput.svelte';
 	import MsgsContainer from '$lib/components/MsgsContainer.svelte';
 
-	const id: string = $page.params.id;
+	const ROOM_ID: string = $page.params.id;
 	let currentRoom: ChatRoom = {};
 	let currentRoomMembers: User[] = [];
 	let messages: Message[] = [];
@@ -15,7 +15,7 @@
 	$: darkMode = !$settings.LightMode;
 
 	onMount(() => {
-		socket = new WebSocket(`ws://localhost:7000/api/socket/${id}`);
+		socket = new WebSocket(`ws://localhost:7000/api/socket/${ROOM_ID}`);
 		socket.onopen = () => {
 			socket.onmessage = ({ data }: { data: string }) => {
 				let message = JSON.parse(data);
@@ -27,6 +27,7 @@
 		messages = $page.data.messages;
 		currentRoomMembers = $page.data.members;
 		currentRoom = $page.data.room;
+		Object.freeze(currentRoom);
 		$loading.goPast = true;
 	});
 </script>
@@ -41,7 +42,7 @@
 		<span>{currentRoom.title}</span>
 	</div>
 	<MsgsContainer {messages} {currentRoomMembers} />
-	<MsgInput {id} {socket} />
+	<MsgInput id={ROOM_ID} {socket} />
 </div>
 
 <style>
