@@ -7,6 +7,7 @@
 	font-family: inherit;
 	border-radius: 25px;
 	padding: 10px;
+	color: #333333;
 }
 
 .container.dark .msg-input textarea {
@@ -27,12 +28,12 @@
 
 .msg-input button {
 	background: #ffffff;
-	border: #005fcf solid 2px;
+	border: #4a90e2 solid 2px;
 	cursor: pointer;
 	border-radius: 25px;
 	width: 97px;
 	height: 49px;
-	color: #005fcf;
+	color: #4a90e2;
 	font-size: 15px;
 	transition:
 		background 0.5s,
@@ -41,7 +42,7 @@
 
 .msg-input button:focus,
 .msg-input button:hover {
-	background: #005fcf;
+	background: #4a90e2;
 	border-color: #fff;
 	color: #fff;
 }

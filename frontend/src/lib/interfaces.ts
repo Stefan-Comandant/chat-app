@@ -1,4 +1,4 @@
-export interface User {
+export type User = {
 	id?: string;
 	profilepicture?: string;
 	username?: string;
@@ -7,18 +7,18 @@ export interface User {
 	password?: string;
 	currency?: string;
 	balance?: number;
-}
+};
 
-export interface Message {
+export type Message = {
 	id?: number;
 	text: string;
 	sentat?: string;
 	from?: string;
 	to?: string;
 	shortened?: boolean;
-}
+};
 
-export interface ChatRoom {
+export type ChatRoom = {
 	id?: string;
 	title?: string;
 	profilepicture?: string;
@@ -30,24 +30,24 @@ export interface ChatRoom {
 	ownerData?: User;
 	messages?: number[];
 	type?: string;
-}
+};
 
-export interface HTTPResponse {
+export type HTTPResponse = {
 	status?: string;
 	response?: any;
 	id?: string;
-}
+};
 
-export interface VerificationSession {
+export type VerificationSession = {
 	id?: string;
 	code?: string;
 	userid?: string;
-}
+};
 
-export interface MessageDate {
+export type MessageDate = {
 	ofYear?: string;
 	ofDay?: string;
-}
+};
 
 export const FetchConfig: any = {
 	method: 'GET',
@@ -57,6 +57,6 @@ export const FetchConfig: any = {
 	}
 };
 
-export interface Setting {
+export type Setting = {
 	LightMode: boolean;
-}
+};
